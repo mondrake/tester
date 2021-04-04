@@ -128,9 +128,9 @@ class TestDiscovery {
       uksort($tests, 'strnatcasecmp');
     }
 
-//    dump($list);
+    dump($list);
 
-//    exit();
+    exit();
 
     $this->testClasses = $list;
 
