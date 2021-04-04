@@ -156,7 +156,7 @@ class ExecManager {
       if ($return_code != 0) {
         if ($error === '') {
           $this->logger->warning("@suite returned with code @code [command: @command @cmdline]", [
-            '@suite' => $this->getPackageLabel(),
+            '@suite' => $command,
             '@code' => $return_code,
             '@command' => $cmd,
             '@cmdline' => $cmdline,
@@ -165,7 +165,7 @@ class ExecManager {
         else {
           // Log $error with context information.
           $this->logger->error("@suite error @code: @error [command: @command @cmdline]", [
-            '@suite' => $this->getPackageLabel(),
+            '@suite' => $command,
             '@code' => $return_code,
             '@error' => $error,
             '@command' => $cmd,
