@@ -11,7 +11,7 @@ use Drupal\tester\TestDiscovery;
 /**
  * Defines the TestDiscoveryCacheContext service.
  *
- * Cache context ID: 'test_discovery'.
+ * Cache context ID: 'tester_test_discovery'.
  */
 class TestDiscoveryCacheContext implements CacheContextInterface {
 

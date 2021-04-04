@@ -112,7 +112,7 @@ class TesterTestForm extends FormBase {
     $form['tests'] = [
       '#cache' => [
         'keys' => ['tester_ui_table'],
-        'contexts' => ['test_discovery'],
+        'contexts' => ['tester_test_discovery'],
       ],
       '#type' => 'table',
       '#id' => 'tester-form-table',

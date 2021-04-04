@@ -5,50 +5,40 @@ namespace Drupal\tester;
 use Doctrine\Common\Reflection\StaticReflectionParser;
 use Drupal\Component\Annotation\Reflection\MockFileFinder;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Test\Exception\MissingGroupException;
-use Drupal\Core\Test\TestDiscovery as CoreTestDiscovery;
 
 /**
  * Discovers available tests.
  */
-class TestDiscovery extends CoreTestDiscovery {
+class TestDiscovery {
 
   /**
-   * The module handler.
+   * The app root.
    *
-   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   * @var string
    */
-  protected $moduleHandler;
+  protected $root;
+
+  /**
+   * @todo
+   */
+  protected $execManager;
 
   /**
    * Constructs a new test discovery.
    *
    * @param string $root
    *   The app root.
-   * @param $class_loader
-   *   The class loader. Normally Composer's ClassLoader, as included by the
-   *   front controller, but may also be decorated; e.g.,
-   *   \Symfony\Component\ClassLoader\ApcClassLoader.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler.
+   * @param \Drupal\tester\ExecManager $exec_manager
+   *   The execution manager.
    */
-  public function __construct($root, $class_loader, ModuleHandlerInterface $module_handler) {
-    parent::__construct($root, $class_loader);
-    $this->moduleHandler = $module_handler;
+  public function __construct(string $root, ExecManager $exec_manager) {
+    $this->root = $root;
+    $this->execManager = $exec_manager;
   }
 
   /**
    * Discovers all available tests in all extensions.
-   *
-   * This method is a near-duplicate of
-   * \Drupal\Core\Tests\TestDiscovery::getTestClasses(). It exists so that we
-   * can provide a BC invocation of hook_simpletest_alter().
-   *
-   * @param string $extension
-   *   (optional) The name of an extension to limit discovery to; e.g., 'node'.
-   * @param string[] $types
-   *   An array of included test types.
    *
    * @return array
    *   An array of tests keyed by the the group name. If a test is annotated to
@@ -65,12 +55,7 @@ class TestDiscovery extends CoreTestDiscovery {
    *     );
    * @endcode
    */
-  public function getTestClasses($extension = NULL, array $types = []) {
-    if (!isset($extension) && empty($types)) {
-      if (!empty($this->testClasses)) {
-        return $this->testClasses;
-      }
-    }
+  public function getTestClasses() {
     $list = [];
 
     $classmap = $this->findAllClassFiles($extension);
@@ -96,19 +81,6 @@ class TestDiscovery extends CoreTestDiscovery {
         // abstract class, trait or test fixture.
         continue;
       }
-      // Skip this test class if it is a Simpletest-based test and requires
-      // unavailable modules. TestDiscovery should not filter out module
-      // requirements for PHPUnit-based test classes.
-      // @todo Move this behavior to \Drupal\simpletest\TestBase so tests can be
-      //       marked as skipped, instead.
-      // @see https://www.drupal.org/node/1273478
-      if ($info['type'] == 'Simpletest') {
-        if (!empty($info['requires']['module'])) {
-          if (array_diff($info['requires']['module'], $this->availableExtensions['module'])) {
-            continue;
-          }
-        }
-      }
 
       foreach ($info['groups'] as $group) {
         $list[$group][$classname] = $info;
@@ -120,9 +92,6 @@ class TestDiscovery extends CoreTestDiscovery {
     foreach ($list as &$tests) {
       uksort($tests, 'strnatcasecmp');
     }
-
-    // Allow modules extending core tests to disable originals.
-    $this->moduleHandler->alterDeprecated('Convert your test to a PHPUnit-based one and implement test listeners. See: https://www.drupal.org/node/2939892', 'simpletest', $list);
 
     if (!isset($extension) && empty($types)) {
       $this->testClasses = $list;
