@@ -35,7 +35,7 @@ class TesterTestForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('renderer'),
-      $container->get('test_discovery')
+      $container->get('tester.test_discovery')
     );
   }
 

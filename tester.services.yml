@@ -1,5 +1,5 @@
 services:
-  test_discovery:
+  tester.test_discovery:
     class: Drupal\tester\TestDiscovery
     arguments: ['@app.root', '@class_loader', '@module_handler']
   environment_cleaner_factory:
