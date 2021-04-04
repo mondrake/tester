@@ -1,12 +1,12 @@
 <?php
 
-namespace Drupal\simpletest\Cache\Context;
+namespace Drupal\tester\Cache\Context;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Cache\Context\CacheContextInterface;
 use Drupal\Core\PrivateKey;
 use Drupal\Core\Site\Settings;
-use Drupal\simpletest\TestDiscovery;
+use Drupal\tester\TestDiscovery;
 
 /**
  * Defines the TestDiscoveryCacheContext service.
@@ -18,7 +18,7 @@ class TestDiscoveryCacheContext implements CacheContextInterface {
   /**
    * The test discovery service.
    *
-   * @var \Drupal\simpletest\TestDiscovery
+   * @var \Drupal\tester\TestDiscovery
    */
   protected $testDiscovery;
 
@@ -43,7 +43,7 @@ class TestDiscoveryCacheContext implements CacheContextInterface {
   /**
    * Construct a test discovery cache context.
    *
-   * @param \Drupal\simpletest\TestDiscovery $test_discovery
+   * @param \Drupal\tester\TestDiscovery $test_discovery
    *   The test discovery service.
    * @param \Drupal\Core\PrivateKey $private_key
    *   The private key service.

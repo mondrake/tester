@@ -1,0 +1,9 @@
+tester.test_form:
+  title: List
+  route_name: tester.test_form
+  base_route: tester.test_form
+tester.settings:
+  title: Settings
+  route_name: tester.settings
+  base_route: tester.test_form
+  weight: 100

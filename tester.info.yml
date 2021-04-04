@@ -1,0 +1,5 @@
+name: Tester
+type: module
+description: 'A module to run PHPUnit tests in Drupal.'
+core_version_requirement: ^9.1
+configure: tester.settings

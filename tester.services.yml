@@ -1,0 +1,15 @@
+services:
+  test_discovery:
+    class: Drupal\tester\TestDiscovery
+    arguments: ['@app.root', '@class_loader', '@module_handler']
+  environment_cleaner_factory:
+    class: Drupal\tester\EnvironmentCleanerFactory
+    arguments: ['@service_container']
+  environment_cleaner:
+    class: Drupal\tester\EnvironmentCleanerService
+    factory: 'environment_cleaner_factory:createCleaner'
+  cache_context.test_discovery:
+    class: Drupal\tester\Cache\Context\TestDiscoveryCacheContext
+    arguments: ['@test_discovery', '@private_key']
+    tags:
+      - { name: cache.context}

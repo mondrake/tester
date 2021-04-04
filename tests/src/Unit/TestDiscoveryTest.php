@@ -1,18 +1,18 @@
 <?php
 
-namespace Drupal\Tests\simpletest\Unit;
+namespace Drupal\Tests\tester\Unit;
 
 use Composer\Autoload\ClassLoader;
 use Drupal\Core\DependencyInjection\Container;
 use Drupal\Core\DrupalKernel;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\simpletest\TestDiscovery;
+use Drupal\tester\TestDiscovery;
 use Drupal\Tests\UnitTestCase;
 use org\bovigo\vfs\vfsStream;
 
 /**
- * @coversDefaultClass \Drupal\simpletest\TestDiscovery
+ * @coversDefaultClass \Drupal\tester\TestDiscovery
  *
  * @group simpletest
  * @group legacy

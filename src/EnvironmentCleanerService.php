@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simpletest;
+namespace Drupal\tester;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -73,7 +73,7 @@ class EnvironmentCleanerService extends EnvironmentCleaner {
    */
   public function cleanEnvironment($clear_results = TRUE, $clear_temp_directories = TRUE, $clear_database = TRUE) {
     $results_removed = 0;
-    $clear_results = $this->configFactory->get('simpletest.settings')->get('clear_results');
+    $clear_results = $this->configFactory->get('tester.settings')->get('clear_results');
 
     if ($clear_database) {
       $this->cleanDatabase();
@@ -84,8 +84,8 @@ class EnvironmentCleanerService extends EnvironmentCleaner {
     if ($clear_results) {
       $results_removed = $this->cleanResultsTable();
     }
-    $this->cacheDefault->delete('simpletest');
-    $this->cacheDefault->delete('simpletest_phpunit');
+    $this->cacheDefault->delete('tester');
+    $this->cacheDefault->delete('tester_phpunit');
 
     if ($clear_results) {
       $this->messenger->addMessage($this->translation->formatPlural($results_removed, 'Removed 1 test result.', 'Removed @count test results.'));

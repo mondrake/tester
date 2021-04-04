@@ -1,0 +1,14 @@
+tester:
+  version: VERSION
+  js:
+    tester.js: {}
+  css:
+    component:
+      css/tester.module.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+    - core/drupal.tableselect
+    - core/drupal.debounce

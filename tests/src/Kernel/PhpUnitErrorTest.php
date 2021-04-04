@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\simpletest\Kernel;
+namespace Drupal\Tests\tester\Kernel;
 
 use Drupal\KernelTests\KernelTestBase;
 
@@ -22,12 +22,12 @@ class PhpUnitErrorTest extends KernelTestBase {
   /**
    * Test errors reported.
    *
-   * @expectedDeprecation simpletest_phpunit_xml_to_rows is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\JUnitConverter::xmlToRows() instead. See https://www.drupal.org/node/2948547
+   * @expectedDeprecation tester_phpunit_xml_to_rows is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\JUnitConverter::xmlToRows() instead. See https://www.drupal.org/node/2948547
    */
   public function testPhpUnitXmlParsing() {
     $phpunit_error_xml = __DIR__ . '/../../fixtures/phpunit_error.xml';
 
-    $res = simpletest_phpunit_xml_to_rows(1, $phpunit_error_xml);
+    $res = tester_phpunit_xml_to_rows(1, $phpunit_error_xml);
     $this->assertEquals(count($res), 4, 'All testcases got extracted');
     $this->assertNotEquals($res[0]['status'], 'pass');
     $this->assertEquals($res[0]['status'], 'fail');
@@ -38,9 +38,9 @@ class PhpUnitErrorTest extends KernelTestBase {
       $this->assertEquals($res[$i + 1]['status'], 'fail');
     }
 
-    // Make sure simpletest_phpunit_xml_to_rows() does not balk if the test
+    // Make sure tester_phpunit_xml_to_rows() does not balk if the test
     // didn't run.
-    $this->assertNull(simpletest_phpunit_xml_to_rows(1, 'does_not_exist'));
+    $this->assertNull(tester_phpunit_xml_to_rows(1, 'does_not_exist'));
   }
 
 }

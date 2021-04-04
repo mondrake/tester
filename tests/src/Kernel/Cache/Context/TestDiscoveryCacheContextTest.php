@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\Tests\simpletest\Kernel\Cache\Context;
+namespace Drupal\Tests\tester\Kernel\Cache\Context;
 
 use Drupal\KernelTests\KernelTestBase;
-use Drupal\simpletest\Cache\Context\TestDiscoveryCacheContext;
-use Drupal\simpletest\TestDiscovery;
+use Drupal\tester\Cache\Context\TestDiscoveryCacheContext;
+use Drupal\tester\TestDiscovery;
 
 /**
  * @group simpletest
@@ -20,7 +20,7 @@ class TestDiscoveryCacheContextTest extends KernelTestBase {
   /**
    * Tests that test context hashes are unique.
    *
-   * @expectedDeprecation Drupal\simpletest\TestDiscovery is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\TestDiscovery instead. See https://www.drupal.org/node/2949692
+   * @expectedDeprecation Drupal\tester\TestDiscovery is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\TestDiscovery instead. See https://www.drupal.org/node/2949692
    */
   public function testContext() {
     // Mock test discovery.

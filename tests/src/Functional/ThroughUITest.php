@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\Tests\simpletest\Functional;
+namespace Drupal\Tests\tester\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 
 /**
  * Fixture test that is executed during Simpletest UI testing.
  *
- * @see \Drupal\simpletest\Tests::testTestingThroughUI()
+ * @see \Drupal\tester\Tests::testTestingThroughUI()
  *
  * @group simpletest
  * @group legacy

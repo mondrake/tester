@@ -1,0 +1,23 @@
+tester.settings:
+  path: '/admin/config/development/testing/settings'
+  defaults:
+    _form: '\Drupal\tester\Form\TesterSettingsForm'
+    _title: 'Test settings'
+  requirements:
+    _permission: 'administer unit tests'
+
+tester.test_form:
+  path: '/admin/config/development/testing'
+  defaults:
+    _form: '\Drupal\tester\Form\TesterTestForm'
+    _title: 'Testing'
+  requirements:
+    _permission: 'administer unit tests'
+
+tester.result_form:
+  path: '/admin/config/development/testing/results/{test_id}'
+  defaults:
+    _form: '\Drupal\tester\Form\TesterResultsForm'
+    _title: 'Test result'
+  requirements:
+    _permission: 'administer unit tests'

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\simpletest;
+namespace Drupal\tester;
 
 use Drupal\Core\DependencyInjection\Container;
 use Drupal\Core\Test\TestDatabase;
@@ -34,7 +34,7 @@ class EnvironmentCleanerFactory {
   /**
    * Factory method to create the environment cleaner service.
    *
-   * @return \Drupal\simpletest\EnvironmentCleanerService
+   * @return \Drupal\tester\EnvironmentCleanerService
    *   The environment cleaner service.
    */
   public function createCleaner() {

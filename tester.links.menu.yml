@@ -1,0 +1,6 @@
+tester.test_form:
+  title: Tester
+  description: 'Run tests against the site''s core code and enabled modules to review your code.'
+  route_name: tester.test_form
+  parent: system.admin_config_development
+  weight: -5

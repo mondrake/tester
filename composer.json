@@ -1,22 +1,9 @@
 {
-  "name": "drupal/simpletest",
-  "description": "The SimpleTest D8/D9 branch is a copy from the D8 SimpleTest module from Drupal core.",
-  "type": "drupal-module",
-  "license": "GPL-2.0+",
-  "keywords": [
-    "Drupal",
-    "testing"
-  ],
-  "homepage": "https://www.drupal.org/project/simpletest",
-  "authors": [
-    {
-      "name": "See contributors",
-      "homepage": "https://www.drupal.org/node/11873/committers",
-      "role": "Developer"
+    "name": "drupal/tester",
+    "type": "drupal-module",
+    "description": "A module to run PHPUnit tests in Drupal.",
+    "require": {
+        "php": ">=7.3",
+        "drupal/core": "^9.1"
     }
-  ],
-  "minimum-stability": "dev",
-  "support": {},
-  "require": {},
-  "require-dev": {}
 }
