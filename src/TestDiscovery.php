@@ -68,11 +68,22 @@ class TestDiscovery {
     $list_command_ret = $this->execManager->execute('phpunit', [
       '-c',
       'core',
+      '--group',
+      'Database',
       '--list-tests-xml',
       'sites/tester/list-tests.xml',
     ], $output, $error);
 
     dump([$output, $error]);
+
+    $contents = @file_get_contents('sites/tester/list-tests.xml');
+    if (!$contents) {
+      return [];
+    }
+    $xml = new \SimpleXMLElement($contents));
+
+    dump($xml);
+
     exit();
 
     foreach ($classmap as $classname => $pathname) {
