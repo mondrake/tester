@@ -81,9 +81,9 @@ class TestDiscovery {
     $xml = new \SimpleXMLElement($contents);
 
     foreach ($xml as $testCaseClass) {
-      $list[] = $testCaseClass->getAttribute('name')->getValue();
+      $list[] = $testCaseClass->attributes()->name;
     }
-    
+
     dump($list);
 
     exit();
