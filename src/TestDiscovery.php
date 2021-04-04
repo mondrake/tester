@@ -58,13 +58,20 @@ class TestDiscovery {
   public function getTestClasses() {
     $list = [];
 
-    $classmap = $this->findAllClassFiles($extension);
+//    $classmap = $this->findAllClassFiles($extension);
 
     // Prevent expensive class loader lookups for each reflected test class by
     // registering the complete classmap of test classes to the class loader.
     // This also ensures that test classes are loaded from the discovered
     // pathnames; a namespace/classname mismatch will throw an exception.
-    $this->classLoader->addClassMap($classmap);
+//    $this->classLoader->addClassMap($classmap);
+    $list_command_ret = $this->execManager->execute('phpunit', [
+      '-c core',
+      '--list-tests-xml list-tests.xml',
+    ], $output, $error);
+
+    dump([$output, $error]);
+    return [];
 
     foreach ($classmap as $classname => $pathname) {
       $finder = MockFileFinder::create($pathname);

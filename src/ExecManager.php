@@ -149,7 +149,7 @@ class ExecManager {
    * {@inheritdoc}
    */
   public function execute(string $command, array $arguments, string &$output = NULL, string &$error = NULL, string $path = NULL): bool {
-    $cmd = $this->getExecutable($path);
+    $cmd = $this->getExecutable($command, $path);
     $return_code = $this->runOsShell($cmd, $arguments, $output, $error);
     if ($return_code !== FALSE) {
       // If the executable returned a non-zero code, log to the watchdog.
@@ -240,21 +240,18 @@ class ExecManager {
   /**
    * Returns the full path to the executable.
    *
+   * @param string $command
+   *   (optional) The command, 'phpunit' by default.
    * @param string $path
-   *   (optional) A custom path to the folder of the executable. When left
-   *   empty, the setting imagemagick.settings.path_to_binaries is taken.
+   *   (optional) A custom path to the folder of the executable.
    *
    * @return string
    *   The full path to the executable.
    */
-  protected function getExecutable(string $path = NULL): string {
-    // $path is only passed from the validation of the image toolkit form, on
-    // which the path to convert is configured. @see ::checkPath()
-    if (!isset($path)) {
-      $path = 'vendor/bin/';
-    }
+  protected function getExecutable(string $command = NULL, string $path = NULL): string {
+    $path = $path ?? 'vendor/bin/';
 
-    $executable = 'phpunit';
+    $executable = $command ?? 'phpunit';
     if ($this->isWindows) {
       $executable .= '.exe';
     }
