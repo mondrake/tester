@@ -13,6 +13,13 @@ use Drupal\Core\Test\Exception\MissingGroupException;
 class TestDiscovery {
 
   /**
+   * Statically cached list of test classes.
+   *
+   * @var array
+   */
+  protected $testClasses;
+
+  /**
    * The app root.
    *
    * @var string
@@ -72,7 +79,7 @@ class TestDiscovery {
       'sites/tester/list-tests.xml',
     ], $output, $error);
 
-    dump([$output, $error]);
+//    dump([$output, $error]);
 
     $contents = @file_get_contents('sites/tester/list-tests.xml');
     if (!$contents) {
@@ -80,19 +87,21 @@ class TestDiscovery {
     }
     $xml = new \SimpleXMLElement($contents);
 
-    $classes = [];
     foreach ($xml as $testCaseClass) {
       $class = [];
-      $class['name'] = (string) $testCaseClass->attributes()->name[0];
-      $class['groups'] = (string) $testCaseClass->children()[0]->attributes()->groups[0];
-      $classes[] = $class;
+      $groups = explode(',', (string) $testCaseClass->children()[0]->attributes()->groups[0]);
+      $group = $groups[0];
+      $classname = (string) $testCaseClass->attributes()->name[0];
+
+      $class['name'] = $classname;
+      $class['description'] = 'fake';
+      $class['group'] = $group;
+      $class['groups'] = $groups;
+
+      $list[$group][$classname] = $class;
     }
 
-    dump($classes);
-
-    exit();
-
-    foreach ($classmap as $classname => $pathname) {
+/*    foreach ($classmap as $classname => $pathname) {
       $finder = MockFileFinder::create($pathname);
       $parser = new StaticReflectionParser($classname, $finder, TRUE);
       try {
@@ -112,22 +121,18 @@ class TestDiscovery {
         $list[$group][$classname] = $info;
       }
     }
-
+*/
     // Sort the groups and tests within the groups by name.
     uksort($list, 'strnatcasecmp');
     foreach ($list as &$tests) {
       uksort($tests, 'strnatcasecmp');
     }
 
-    if (!isset($extension) && empty($types)) {
-      $this->testClasses = $list;
-    }
+//    dump($list);
 
-    if ($types) {
-      $list = NestedArray::filter($list, function ($element) use ($types) {
-        return !(is_array($element) && isset($element['type']) && !in_array($element['type'], $types));
-      });
-    }
+//    exit();
+
+    $this->testClasses = $list;
 
     return $list;
   }
