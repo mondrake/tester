@@ -66,8 +66,10 @@ class TestDiscovery {
     // pathnames; a namespace/classname mismatch will throw an exception.
 //    $this->classLoader->addClassMap($classmap);
     $list_command_ret = $this->execManager->execute('phpunit', [
-      '-c core',
-      '--list-tests-xml list-tests.xml',
+      '-c',
+      'core',
+      '--list-tests-xml',
+      'list-tests.xml',
     ], $output, $error);
 
     dump([$output, $error]);
