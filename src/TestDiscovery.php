@@ -80,11 +80,15 @@ class TestDiscovery {
     }
     $xml = new \SimpleXMLElement($contents);
 
+    $classes = [];
     foreach ($xml as $testCaseClass) {
-      $list[] = $testCaseClass->attributes()->name;
+      $class = [];
+      $class['name'] = $testCaseClass->attributes()->name[0];
+      $class['groups'] = $testCaseClass->children()[0]->groups[0];
+      $classes[] = $class;
     }
 
-    dump($list);
+    dump($classes);
 
     exit();
 
