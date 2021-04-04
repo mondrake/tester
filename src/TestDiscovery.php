@@ -69,11 +69,11 @@ class TestDiscovery {
       '-c',
       'core',
       '--list-tests-xml',
-      'list-tests.xml',
+      'sites/tester/list-tests.xml',
     ], $output, $error);
 
     dump([$output, $error]);
-    return [];
+    exit();
 
     foreach ($classmap as $classname => $pathname) {
       $finder = MockFileFinder::create($pathname);
