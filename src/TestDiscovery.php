@@ -83,8 +83,8 @@ class TestDiscovery {
     $classes = [];
     foreach ($xml as $testCaseClass) {
       $class = [];
-      $class['name'] = $testCaseClass->attributes()->name[0];
-      $class['groups'] = $testCaseClass->children()[0]->groups[0];
+      $class['name'] = (string) $testCaseClass->attributes()->name[0];
+      $class['groups'] = (string) $testCaseClass->children()[0]->attributes()->groups[0];
       $classes[] = $class;
     }
 
