@@ -83,9 +83,9 @@ function tester_uninstall() {
   // Do not clean the environment in case the Tester module is uninstalled
   // in a (recursive) test for itself, since tester_clean_environment()
   // would also delete the test site of the parent test process.
-  if (!drupal_valid_test_ua()) {
-    \Drupal::service('environment_cleaner')->cleanEnvironment();
-  }
+//  if (!drupal_valid_test_ua()) {
+//    \Drupal::service('environment_cleaner')->cleanEnvironment();
+//  }
   // Delete verbose test output and any other testing framework files.
   try {
     \Drupal::service('file_system')->deleteRecursive('public://tester');
