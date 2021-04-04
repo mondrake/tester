@@ -10,6 +10,6 @@ services:
     factory: 'environment_cleaner_factory:createCleaner'
   cache_context.test_discovery:
     class: Drupal\tester\Cache\Context\TestDiscoveryCacheContext
-    arguments: ['@test_discovery', '@private_key']
+    arguments: ['@tester.test_discovery', '@private_key']
     tags:
       - { name: cache.context}
