@@ -186,8 +186,8 @@ class ExecManager {
   /**
    * {@inheritdoc}
    */
-  public function runOsShell(string $command, array $arguments, string $id, string &$output = NULL, string &$error = NULL): int {
-    $command_line = $command . ' ' . $arguments;
+  public function runOsShell(string $command, array $arguments, string &$output = NULL, string &$error = NULL): int {
+    $command_line = array_merge([$command], $arguments);
     $output = '';
     $error = '';
 
