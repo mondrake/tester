@@ -68,8 +68,6 @@ class TestDiscovery {
     $list_command_ret = $this->execManager->execute('phpunit', [
       '-c',
       'core',
-      '--group',
-      'Database',
       '--list-tests-xml',
       'sites/tester/list-tests.xml',
     ], $output, $error);
@@ -82,7 +80,11 @@ class TestDiscovery {
     }
     $xml = new \SimpleXMLElement($contents);
 
-    dump($xml);
+    foreach ($xml as $testCaseClass) {
+      $list[] = $testCaseClass->getAttribute('name')->getValue();
+    }
+    
+    dump($list);
 
     exit();
 
