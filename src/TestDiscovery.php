@@ -80,7 +80,7 @@ class TestDiscovery {
     if (!$contents) {
       return [];
     }
-    $xml = new \SimpleXMLElement($contents));
+    $xml = new \SimpleXMLElement($contents);
 
     dump($xml);
 
