@@ -41,7 +41,7 @@ class EnvironmentCleanerFactory {
     $cleaner = new EnvironmentCleanerService(
       $this->container->get('app.root'),
       Database::getConnection(),
-      new SimpletestTestRunResultsStorage(Database::getConnection('default', 'test-runner')),
+      TestDatabase::getConnection(),
       $this->container->get('messenger'),
       $this->container->get('string_translation'),
       $this->container->get('config.factory'),

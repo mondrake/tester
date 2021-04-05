@@ -8,12 +8,12 @@ services:
   tester.exec_manager:
     class: Drupal\tester\ExecManager
     arguments: ['@logger.channel.tester', '@config.factory', '@app.root', '@current_user', '@messenger']
-  testre.environment_cleaner_factory:
+  environment_cleaner_factory:
     class: Drupal\tester\EnvironmentCleanerFactory
     arguments: ['@service_container']
-  tester.environment_cleaner:
+  environment_cleaner:
     class: Drupal\tester\EnvironmentCleanerService
-    factory: 'tester.environment_cleaner_factory:createCleaner'
+    factory: 'environment_cleaner_factory:createCleaner'
   cache_context.tester_test_discovery:
     class: Drupal\tester\Cache\Context\TestDiscoveryCacheContext
     arguments: ['@tester.test_discovery', '@private_key']

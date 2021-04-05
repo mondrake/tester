@@ -2,71 +2,92 @@
 
 namespace Drupal\tester;
 
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\File\FileSystem;
+use Drupal\Core\Test\EnvironmentCleaner;
 
 /**
- * Helper class for cleaning test environments.
+ * Uses containerized services to perform post-test cleanup.
  */
-class EnvironmentCleanerService implements EnvironmentCleanerInterface {
+class EnvironmentCleanerService extends EnvironmentCleaner {
 
   /**
-   * Path to Drupal root directory.
+   * Messenger service.
    *
-   * @var string
+   * @var \Drupal\Core\Messenger\MessengerInterface
    */
-  protected $root;
+  protected $messenger;
 
   /**
-   * Connection to the database being used for tests.
+   * The translation service.
    *
-   * @var \Drupal\Core\Database\Connection
+   * @var \Drupal\Core\StringTranslation\TranslationInterface
    */
-  protected $testDatabase;
+  protected $translation;
 
   /**
-   * The test run results storage.
+   * The config factory.
    *
-   * @var \Drupal\Core\Test\TestRunResultsStorageInterface
+   * @var \Drupal\Core\Config\ConfigFactory
    */
-  protected $testRunResultsStorage;
+  protected $configFactory;
 
   /**
-   * The file system service.
+   * Default cache.
    *
-   * @var \Drupal\Core\File\FileSystemInterface
+   * @var \Drupal\Core\Cache\CacheBackendInterface
    */
-  protected $fileSystem;
+  protected $cacheDefault;
 
   /**
-   * @todo.
+   * Construct an environment cleaner.
+   *
+   * @param string $root
+   *   The path to the root of the Drupal installation.
+   * @param \Drupal\Core\Database\Connection $test_database
+   *   Connection to the database against which tests were run.
+   * @param \Drupal\Core\Database\Connection $results_database
+   *   Connection to the database where test results were stored. This could be
+   *   the same as $test_database, or it could be different.
+   * @param \Drupal\Core\StringTranslation\TranslationInterface|null $translation
+   *   (optional) The translation service. If none is supplied, this class will
+   *   attempt to discover one using \Drupal.
    */
-  public function __construct(string $root, Connection $test_database, TestRunResultsStorageInterface $test_run_results_storage, MessengerInterface $messenger, TranslationInterface $translation, ConfigFactory $config, CacheBackendInterface $cache_default, FileSystemInterface $file_system) {
+  public function __construct($root, Connection $test_database, Connection $results_database, MessengerInterface $messenger, TranslationInterface $translation, ConfigFactory $config, CacheBackendInterface $cache_default, FileSystem $file_system) {
     $this->root = $root;
     $this->testDatabase = $test_database;
-    $this->testRunResultsStorage = $test_run_results_storage;
+    $this->resultsDatabase = $results_database;
     $this->messenger = $messenger;
     $this->translation = $translation;
     $this->configFactory = $config;
     $this->cacheDefault = $cache_default;
     $this->fileSystem = $file_system;
   }
+
   /**
    * {@inheritdoc}
    */
-  public function cleanEnvironment(bool $clear_results = TRUE, bool $clear_temp_directories = TRUE, bool $clear_database = TRUE): void {
-    $count = 0;
+  public function cleanEnvironment($clear_results = TRUE, $clear_temp_directories = TRUE, $clear_database = TRUE) {
+    $results_removed = 0;
+    $clear_results = $this->configFactory->get('tester.settings')->get('clear_results');
+
     if ($clear_database) {
-      $this->doCleanDatabase();
+      $this->cleanDatabase();
     }
     if ($clear_temp_directories) {
-      $this->doCleanTemporaryDirectories();
+      $this->cleanTemporaryDirectories();
     }
     if ($clear_results) {
-      $count = $this->cleanResults();
+      $results_removed = $this->cleanResultsTable();
+    }
+    $this->cacheDefault->delete('tester');
+    $this->cacheDefault->delete('tester_phpunit');
+
+    if ($clear_results) {
       $this->messenger->addMessage($this->translation->formatPlural($results_removed, 'Removed 1 test result.', 'Removed @count test results.'));
     }
     else {
@@ -77,9 +98,9 @@ class EnvironmentCleanerService implements EnvironmentCleanerInterface {
   /**
    * {@inheritdoc}
    */
-  public function cleanDatabase(): void {
-    $count = $this->doCleanDatabase();
-    if ($count > 0) {
+  public function cleanDatabase() {
+    $tables_removed = $this->doCleanDatabase();
+    if ($tables_removed > 0) {
       $this->messenger->addMessage($this->translation->formatPlural($tables_removed, 'Removed 1 leftover table.', 'Removed @count leftover tables.'));
     }
     else {
@@ -88,69 +109,16 @@ class EnvironmentCleanerService implements EnvironmentCleanerInterface {
   }
 
   /**
-   * Performs the fixture database cleanup.
-   *
-   * @return int
-   *   The number of tables that were removed.
-   */
-  protected function doCleanDatabase(): int {
-    /* @var $schema \Drupal\Core\Database\Schema */
-    $schema = $this->testDatabase->schema();
-    $tables = $schema->findTables('test%');
-    $count = 0;
-    foreach ($tables as $table) {
-      // Only drop tables which begin wih 'test' followed by digits, for example,
-      // {test12345678node__body}.
-      if (preg_match('/^test\d+.*/', $table, $matches)) {
-        $schema->dropTable($matches[0]);
-        $count++;
-      }
-    }
-    return $count;
-  }
-
-  /**
    * {@inheritdoc}
    */
-  public function cleanTemporaryDirectories(): void {
-    $count = $this->doCleanTemporaryDirectories();
-    if ($count > 0) {
+  public function cleanTemporaryDirectories() {
+    $directories_removed = $this->doCleanTemporaryDirectories();
+    if ($directories_removed > 0) {
       $this->messenger->addMessage($this->translation->formatPlural($directories_removed, 'Removed 1 temporary directory.', 'Removed @count temporary directories.'));
     }
     else {
       $this->messenger->addMessage($this->translation->translate('No temporary directories to remove.'));
     }
-  }
-
-  /**
-   * Performs the cleanup of temporary test directories.
-   *
-   * @return int
-   *   The count of temporary directories removed.
-   */
-  protected function doCleanTemporaryDirectories(): int {
-    $count = 0;
-    $simpletest_dir = $this->root . '/sites/tester';
-    if (is_dir($simpletest_dir)) {
-      $files = scandir($simpletest_dir);
-      foreach ($files as $file) {
-        if ($file[0] != '.') {
-          $path = $simpletest_dir . '/' . $file;
-          $this->fileSystem->deleteRecursive($path, function ($any_path) {
-            @chmod($any_path, 0700);
-          });
-          $count++;
-        }
-      }
-    }
-    return $count;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function cleanResults(TestRun $test_run = NULL): int {
-    return $test_run ? $test_run->removeResults() : $this->testRunResultsStorage->cleanUp();
   }
 
 }
