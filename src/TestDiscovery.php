@@ -69,23 +69,7 @@ class TestDiscovery extends CoreTestDiscovery {
     // pathnames; a namespace/classname mismatch will throw an exception.
     $this->classLoader->addClassMap($classmap);
 
-    // Executes PHPUnit with the --list-tests-xml option to retrieve all the
-    // test classes that can be run.
-    $list_command_ret = $this->execManager->execute('phpunit', [
-      '-c',
-      'core',
-      '--list-tests-xml',
-      'sites/tester/list-tests.xml',
-    ], $output, $error);
-
-    // Load the output XML for processing.
-    $contents = @file_get_contents('sites/tester/list-tests.xml');
-    if (!$contents) {
-      return [];
-    }
-    $xml = new \SimpleXMLElement($contents);
-
-    foreach ($xml as $test_case_class) {
+    foreach ($this->retrievePhpUnitTestsListXml() as $test_case_class) {
       $classname = (string) $test_case_class->attributes()->name[0];
       $pathname = $classmap[$classname];
       $finder = MockFileFinder::create($pathname);
@@ -114,6 +98,29 @@ class TestDiscovery extends CoreTestDiscovery {
 
     $this->testClasses = $list;
     return $this->testClasses;
+  }
+
+  /**
+   * @todo
+   */
+  protected function retrievePhpUnitTestsListXml(): \SimpleXMLElement {
+    // Executes PHPUnit with the --list-tests-xml option to retrieve all the
+    // test classes that can be run.
+    if (!file_exists('sites/tester/list-tests.xml')) {
+      $list_command_ret = $this->execManager->execute('phpunit', [
+        '-c',
+        'core',
+        '--list-tests-xml',
+        'sites/tester/list-tests.xml',
+      ], $output, $error);
+    }
+
+    // Load the output XML for processing.
+    $contents = @file_get_contents('sites/tester/list-tests.xml');
+    if (!$contents) {
+      throw new \RuntimeException('Could not load content of file list-tests.xml');
+    }
+    return new \SimpleXMLElement($contents);
   }
 
 }
