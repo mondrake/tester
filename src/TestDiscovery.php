@@ -5,6 +5,8 @@ namespace Drupal\tester;
 use Doctrine\Common\Reflection\StaticReflectionParser;
 use Drupal\Component\Annotation\Reflection\MockFileFinder;
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Test\Exception\MissingGroupException;
 use Drupal\Core\Test\TestDiscovery as CoreTestDiscovery;
 
@@ -19,20 +21,19 @@ class TestDiscovery extends CoreTestDiscovery {
   protected $execManager;
 
   /**
-   * Constructs a TestDiscovery object.
+   * The cache service.
    *
-   * @param string $root
-   *   The app root.
-   * @param $class_loader
-   *   The class loader. Normally Composer's ClassLoader, as included by the
-   *   front controller, but may also be decorated; e.g.,
-   *   \Symfony\Component\ClassLoader\ApcClassLoader.
-   * @param \Drupal\tester\ExecManager $exec_manager
-   *   The execution manager.
+   * @var \Drupal\Core\Cache\CacheBackendInterface
    */
-  public function __construct(string $root, $class_loader, ExecManager $exec_manager) {
+  protected $cache;
+
+  /**
+   * @todo
+   */
+  public function __construct(string $root, $class_loader, ExecManager $exec_manager, CacheBackendInterface $cache_default) {
     parent::__construct($root, $class_loader);
     $this->execManager = $exec_manager;
+    $this->cache = $cache_default;
   }
 
   /**
@@ -55,6 +56,11 @@ class TestDiscovery extends CoreTestDiscovery {
    */
   public function getTestClasses($extension = NULL, array $types = []) {
     if ($this->testClasses) {
+      return $this->testClasses;
+    }
+
+    if ($cache = $this->cache->get("tester:test_classes")) {
+      $this->testClasses = $cache->data;
       return $this->testClasses;
     }
 
@@ -97,6 +103,7 @@ class TestDiscovery extends CoreTestDiscovery {
     }
 
     $this->testClasses = $list;
+    $this->cache->set("tester:test_classes", $this->testClasses, Cache::PERMANENT);
     return $this->testClasses;
   }
 
@@ -106,14 +113,12 @@ class TestDiscovery extends CoreTestDiscovery {
   protected function retrievePhpUnitTestsListXml(): \SimpleXMLElement {
     // Executes PHPUnit with the --list-tests-xml option to retrieve all the
     // test classes that can be run.
-    if (!file_exists('sites/tester/list-tests.xml')) {
-      $list_command_ret = $this->execManager->execute('phpunit', [
-        '-c',
-        'core',
-        '--list-tests-xml',
-        'sites/tester/list-tests.xml',
-      ], $output, $error);
-    }
+    $list_command_ret = $this->execManager->execute('phpunit', [
+      '-c',
+      'core',
+      '--list-tests-xml',
+      'sites/tester/list-tests.xml',
+    ], $output, $error);
 
     // Load the output XML for processing.
     $contents = @file_get_contents('sites/tester/list-tests.xml');

@@ -4,7 +4,7 @@ services:
     arguments: ['tester']
   tester.test_discovery:
     class: Drupal\tester\TestDiscovery
-    arguments: ['@app.root', '@class_loader', '@tester.exec_manager']
+    arguments: ['@app.root', '@class_loader', '@tester.exec_manager', '@cache.default']
   tester.exec_manager:
     class: Drupal\tester\ExecManager
     arguments: ['@logger.channel.tester', '@config.factory', '@app.root', '@current_user', '@messenger']
