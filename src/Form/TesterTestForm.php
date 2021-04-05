@@ -187,6 +187,12 @@ class TesterTestForm extends FormBase {
           'class' => ['tester-group-description'],
         ],
       ];
+      $form['tests'][$group]['type'] = [
+        '#markup' => '&nbsp;',
+        '#wrapper_attributes' => [
+          'class' => ['tester-group-type'],
+        ],
+      ];
 
       // Cycle through each test within the current group.
       foreach ($tests as $class => $info) {
