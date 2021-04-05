@@ -170,7 +170,7 @@ function tester_run_tests($test_list) {
 
   // Get the info for the first test being run.
   $first_test = reset($test_list);
-  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo();
+  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($first_test);
   $test_run = TestRun::createNew($test_run_results_storage);
 dump($first_test, $info, $test_run); exit();
 
