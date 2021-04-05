@@ -216,7 +216,7 @@ function _tester_batch_operation($test_list_init, &$context) {
   $test_run = TestRun::createNew($test_run_results_storage);
 //dump($test_class, $test_info, $test_run);exit();
   $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
-  $phpunit_results = $runner->runTests($test_id, [$test_class]);
+  $phpunit_results = $runner->execute($test_run, [$test_class]);
   TestDatabase::processPhpUnitResults($phpunit_results);
   $test_results[$test_class] = tester_summarize_phpunit_result($phpunit_results)[$test_class];
   $size = count($test_list);
