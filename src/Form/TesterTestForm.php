@@ -251,11 +251,8 @@ class TesterTestForm extends FormBase {
 
     $tests_list = array_filter($form_state->getValue('tests'));
     if (!empty($tests_list)) {
-      $test_id = tester_run_tests($tests_list, 'drupal');
-      $form_state->setRedirect(
-        'tester.result_form',
-        ['test_id' => $test_id]
-      );
+      $test_id = tester_run_tests($tests_list);
+      $form_state->setRedirect('tester.result_form', ['test_id' => $test_id]);
     }
   }
 
