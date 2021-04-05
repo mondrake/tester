@@ -170,9 +170,9 @@ function tester_run_tests($test_list) {
 
   // Get the info for the first test being run.
   $first_test = reset($test_list);
-  $info = \Drupal::service('tester.test_discovery')->getTestClasses()[$first_test];
+  $info = \Drupal::service('tester.test_discovery')->getTestClasses();
   $test_run = TestRun::createNew($test_run_results_storage);
-dump($test_run, $info); exit();
+dump($first_test, $info, $test_run); exit();
 
   $batch = [
     'title' => t('Running tests'),
