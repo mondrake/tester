@@ -69,12 +69,31 @@ class TestDiscovery extends CoreTestDiscovery {
     // pathnames; a namespace/classname mismatch will throw an exception.
     $this->classLoader->addClassMap($classmap);
 
-    dump($classmap);
-    exit();
+    foreach ($classmap as $classname => $pathname) {
+      $finder = MockFileFinder::create($pathname);
+      $parser = new StaticReflectionParser($classname, $finder, TRUE);
+      try {
+        $info = static::getTestInfo($classname, $parser->getDocComment());
+        $info['filename'] = $pathname;
+      }
+      catch (MissingGroupException $e) {
+        // If the class name ends in Test and is not a migrate table dump.
+        if (preg_match('/Test$/', $classname) && strpos($classname, 'migrate_drupal\Tests\Table') === FALSE) {
+          throw $e;
+        }
+        // If the class is @group annotation just skip it. Most likely it is an
+        // abstract class, trait or test fixture.
+        continue;
+      }
+
+      foreach ($info['groups'] as $group) {
+        $list[$group][$classname] = $info;
+      }
+    }
 
 
 
-
+/*
 
     $list_command_ret = $this->execManager->execute('phpunit', [
       '-c',
@@ -104,28 +123,8 @@ class TestDiscovery extends CoreTestDiscovery {
 
       $list[$group][$classname] = $class;
     }
-
-/*    foreach ($classmap as $classname => $pathname) {
-      $finder = MockFileFinder::create($pathname);
-      $parser = new StaticReflectionParser($classname, $finder, TRUE);
-      try {
-        $info = static::getTestInfo($classname, $parser->getDocComment());
-      }
-      catch (MissingGroupException $e) {
-        // If the class name ends in Test and is not a migrate table dump.
-        if (preg_match('/Test$/', $classname) && strpos($classname, 'migrate_drupal\Tests\Table') === FALSE) {
-          throw $e;
-        }
-        // If the class is @group annotation just skip it. Most likely it is an
-        // abstract class, trait or test fixture.
-        continue;
-      }
-
-      foreach ($info['groups'] as $group) {
-        $list[$group][$classname] = $info;
-      }
-    }
 */
+
     // Sort the groups and tests within the groups by name.
     uksort($list, 'strnatcasecmp');
     foreach ($list as &$tests) {
