@@ -131,23 +131,34 @@ function _tester_format_summary_line($summary) {
  *   The test ID.
  */
 function tester_run_tests($test_list) {
-dump($test_list); exit();
-  // We used to separate PHPUnit and Tester tests for a performance
-  // optimization. In order to support backwards compatibility check if these
-  // keys are set and create a single test list.
-  // @todo https://www.drupal.org/node/2748967 Remove BC support in Drupal 9.
-  if (isset($test_list['tester'])) {
-    $test_list = array_merge($test_list, $test_list['tester']);
-    unset($test_list['tester']);
-  }
-  if (isset($test_list['phpunit'])) {
-    $test_list = array_merge($test_list, $test_list['phpunit']);
-    unset($test_list['phpunit']);
+dump($test_list);
+
+  // Set up a SQLite connection for the test runner.
+  $sqlite = DRUPAL_ROOT . '/sites/tester/test-results.sqlite';
+  $databases['test-runner']['default'] = [
+    'driver' => 'sqlite',
+    'database' => $sqlite,
+    'prefix' => [
+      'default' => '',
+    ],
+  ];
+  // Create the test runner SQLite database, unless it exists already.
+  if (!file_exists($sqlite)) {
+    touch($sqlite);
   }
 
-  $test_id = \Drupal::database()->insert('tester_test_id')
-    ->useDefaults(['test_id'])
-    ->execute();
+  // Add the test runner database connection.
+  Database::addConnectionInfo('test-runner', 'default', $databases['test-runner']['default']);
+
+  // Create the Simpletest schema.
+  $test_run_results_storage = new SimpletestTestRunResultsStorage(Database::getConnection('default', 'test-runner'));
+  $test_run_results_storage->buildTestingResultsEnvironment(FALSE);
+
+  // Verify that the Simpletest database schema exists by checking one table.
+  if (!$test_run_results_storage->validateTestingResultsEnvironment()) {
+    throw new \RuntimeException('Missing Simpletest database schema. Either install Simpletest module or use the --sqlite parameter.');
+  }
+dump($test_run_results_storage);
 
   // Clear out the previous verbose files.
   try {
@@ -160,6 +171,8 @@ dump($test_list); exit();
   // Get the info for the first test being run.
   $first_test = reset($test_list);
   $info = TestDiscovery::getTestInfo($first_test);
+  $test_run = TestRun::createNew($test_run_results_storage);
+dump($test_run, $info); exit();
 
   $batch = [
     'title' => t('Running tests'),
@@ -172,8 +185,6 @@ dump($test_list); exit();
     'init_message' => t('Processing test @num of @max - %test.', ['%test' => $info['name'], '@num' => '1', '@max' => count($test_list)]),
   ];
   batch_set($batch);
-
-  \Drupal::moduleHandler()->invokeAllDeprecated('Convert your test to a PHPUnit-based one and implement test listeners. See https://www.drupal.org/node/2934242', 'test_group_started');
 
   return $test_id;
 }
