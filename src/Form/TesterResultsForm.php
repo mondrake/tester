@@ -6,7 +6,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Test\EnvironmentCleanerInterface;
+use Drupal\tester\EnvironmentCleanerInterface;
 use Drupal\Core\Url;
 use Drupal\tester\TestDiscovery;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -41,7 +41,7 @@ class TesterResultsForm extends FormBase {
   /**
    * The environment cleaner service.
    *
-   * @var \Drupal\Core\Test\EnvironmentCleanerInterface
+   * @var \Drupal\tester\EnvironmentCleanerInterface
    */
   protected $cleaner;
 
@@ -51,7 +51,7 @@ class TesterResultsForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('database'),
-      $container->get('environment_cleaner')
+      $container->get('tester.environment_cleaner')
     );
   }
 
