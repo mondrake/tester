@@ -75,7 +75,7 @@ class TestDiscovery extends CoreTestDiscovery {
       try {
         $info = static::getTestInfo($classname, $parser->getDocComment());
   dump($info);
-        $info['name'] = preg_replace('/Drupal\.*Tests/', '...', $info['name']);
+        $info['name'] = preg_replace('/Drupal.*Tests/', '...', $info['name']);
   dump($info);
 exit();
         $info['filename'] = $pathname;
