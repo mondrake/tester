@@ -120,6 +120,7 @@ class TesterTestForm extends FormBase {
       '#header' => [
         ['data' => $this->t('Test'), 'class' => ['tester-test-label']],
         ['data' => $this->t('Description'), 'class' => ['tester-test-description']],
+        ['data' => $this->t('Type'), 'class' => ['tester-test-type']],
       ],
       '#empty' => $this->t('No tests to display.'),
       '#attached' => [
@@ -205,6 +206,14 @@ class TesterTestForm extends FormBase {
           '#suffix' => '</div>',
           '#wrapper_attributes' => [
             'class' => ['tester-test-description', 'table-filter-text-source'],
+          ],
+        ];
+        $form['tests'][$class]['type'] = [
+          '#prefix' => '<div class="type">',
+          '#plain_text' => $info['type'],
+          '#suffix' => '</div>',
+          '#wrapper_attributes' => [
+            'class' => ['tester-test-type', 'table-filter-text-source'],
           ],
         ];
       }
