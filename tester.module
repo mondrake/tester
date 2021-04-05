@@ -250,73 +250,10 @@ function _tester_batch_operation($test_list_init, &$context) {
   $context['sandbox']['tests'] = $test_list;
   $context['sandbox']['test_results'] = $test_results;
   // The test_id is the only thing we need to save for the report page.
-  $context['results']['test_id'] = $test_id;
+  $context['results']['test_id'] = $test_run->id();
 
   // Multistep processing: report progress.
   $context['finished'] = 1 - $size / $max;
-}
-
-/**
- * Executes PHPUnit tests and returns the results of the run.
- *
- * @param $test_id
- *   The current test ID.
- * @param $unescaped_test_classnames
- *   An array of test class names, including full namespaces, to be passed as
- *   a regular expression to PHPUnit's --filter option.
- * @param int $status
- *   (optional) The exit status code of the PHPUnit process will be assigned to
- *   this variable.
- *
- * @return array
- *   The parsed results of PHPUnit's JUnit XML output, in the format of
- *   {tester}'s schema.
- *
- * @deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use
- *   \Drupal\Core\Test\PhpUnitTestRunner::runTests() instead.
- *
- * @see https://www.drupal.org/node/2948547
- */
-function tester_run_phpunit_tests($test_id, array $unescaped_test_classnames, &$status = NULL) {
-  $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
-  @trigger_error(__FUNCTION__ . ' is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\PhpUnitTestRunner::runTests() instead. See https://www.drupal.org/node/2948547', E_USER_DEPRECATED);
-  return $runner->runTests($test_id, $unescaped_test_classnames, $status);
-}
-
-/**
- * Inserts the parsed PHPUnit results into {tester}.
- *
- * @param array[] $phpunit_results
- *   An array of test results returned from tester_phpunit_xml_to_rows().
- *
- * @deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use
- *   \Drupal\Core\Test\TestDatabase::processPhpUnitResults() instead.
- *
- * @see https://www.drupal.org/node/3075252
- */
-function tester_process_phpunit_results($phpunit_results) {
-  @trigger_error(__FUNCTION__ . '() is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\TestDatabase::processPhpUnitResults() instead. See https://www.drupal.org/node/3075252', E_USER_DEPRECATED);
-  TestDatabase::processPhpUnitResults($phpunit_results);
-}
-
-/**
- * Maps phpunit results to a data structure for batch messages and run-tests.sh.
- *
- * @param array $results
- *   The output from tester_run_phpunit_tests().
- *
- * @return array
- *   The test result summary. A row per test class.
- *
- * @deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use
- *   \Drupal\Core\Test\PhpUnitTestRunner::summarizeResults() instead.
- *
- * @see https://www.drupal.org/node/2948547
- */
-function tester_summarize_phpunit_result($results) {
-  $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
-  @trigger_error(__FUNCTION__ . ' is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\PhpUnitTestRunner::summarizeResults() instead. See https://www.drupal.org/node/2948547', E_USER_DEPRECATED);
-  return $runner->summarizeResults($results);
 }
 
 /**
