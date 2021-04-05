@@ -20,6 +20,8 @@ use Drupal\Core\Test\TestDatabase;
 use Drupal\Core\Url;
 use Drupal\tester\Form\TesterResultsForm;
 use Drupal\tester\TestDiscovery;
+use Drupal\tester\SimpletestTestRunResultsStorage;
+use Drupal\tester\TestRun;
 use PHPUnit\Framework\TestCase;
 
 /**
