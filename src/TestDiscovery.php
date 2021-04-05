@@ -6,25 +6,12 @@ use Doctrine\Common\Reflection\StaticReflectionParser;
 use Drupal\Component\Annotation\Reflection\MockFileFinder;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Test\Exception\MissingGroupException;
+use Drupal\Core\Test\TestDiscovery as CoreTestDiscovery;
 
 /**
  * Discovers available tests.
  */
-class TestDiscovery {
-
-  /**
-   * Statically cached list of test classes.
-   *
-   * @var array
-   */
-  protected $testClasses;
-
-  /**
-   * The app root.
-   *
-   * @var string
-   */
-  protected $root;
+class TestDiscovery extends CoreTestDiscovery {
 
   /**
    * @todo
@@ -32,20 +19,24 @@ class TestDiscovery {
   protected $execManager;
 
   /**
-   * Constructs a new test discovery.
+   * Constructs a TestDiscovery object.
    *
    * @param string $root
    *   The app root.
+   * @param $class_loader
+   *   The class loader. Normally Composer's ClassLoader, as included by the
+   *   front controller, but may also be decorated; e.g.,
+   *   \Symfony\Component\ClassLoader\ApcClassLoader.
    * @param \Drupal\tester\ExecManager $exec_manager
    *   The execution manager.
    */
-  public function __construct(string $root, ExecManager $exec_manager) {
-    $this->root = $root;
+  public function __construct(string $root, $class_loader, ExecManager $exec_manager) {
+    parent::__construct($root, $class_loader);
     $this->execManager = $exec_manager;
   }
 
   /**
-   * Discovers all available tests in all extensions.
+   * Discovers all available tests.
    *
    * @return array
    *   An array of tests keyed by the the group name. If a test is annotated to
@@ -63,15 +54,28 @@ class TestDiscovery {
    * @endcode
    */
   public function getTestClasses() {
+    if ($this->testClasses) {
+      return $this->testClasses;
+    }
+
     $list = [];
 
-//    $classmap = $this->findAllClassFiles($extension);
+    // Discovers all test class files in all available extensions.
+    $classmap = $this->findAllClassFiles();
 
     // Prevent expensive class loader lookups for each reflected test class by
     // registering the complete classmap of test classes to the class loader.
     // This also ensures that test classes are loaded from the discovered
     // pathnames; a namespace/classname mismatch will throw an exception.
-//    $this->classLoader->addClassMap($classmap);
+    $this->classLoader->addClassMap($classmap);
+
+    dump($classmap);
+    exit();
+
+
+
+
+
     $list_command_ret = $this->execManager->execute('phpunit', [
       '-c',
       'core',
@@ -134,7 +138,7 @@ class TestDiscovery {
 
     $this->testClasses = $list;
 
-    return $list;
+    return $this->testClasses;
   }
 
 }
