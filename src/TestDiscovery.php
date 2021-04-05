@@ -69,8 +69,8 @@ class TestDiscovery extends CoreTestDiscovery {
     // pathnames; a namespace/classname mismatch will throw an exception.
     $this->classLoader->addClassMap($classmap);
 
-    // Executes PHPUnit with --list-tests-xml option to retrieve all the test
-    // classes that can be run.
+    // Executes PHPUnit with the --list-tests-xml option to retrieve all the
+    // test classes that can be run.
     $list_command_ret = $this->execManager->execute('phpunit', [
       '-c',
       'core',
@@ -86,10 +86,6 @@ class TestDiscovery extends CoreTestDiscovery {
     $xml = new \SimpleXMLElement($contents);
 
     foreach ($xml as $test_case_class) {
-/*dump($test_case_class);
-dump((string) $test_case_class->attributes()->name[0]);
-dump($classmap);
-exit();*/
       $classname = (string) $test_case_class->attributes()->name[0];
       $pathname = $classmap[$classname];
       $finder = MockFileFinder::create($pathname);
@@ -100,12 +96,8 @@ exit();*/
         $info['filename'] = $pathname;
       }
       catch (MissingGroupException $e) {
-        // If the class name ends in Test and is not a migrate table dump.
-        if (preg_match('/Test$/', $classname) && strpos($classname, 'migrate_drupal\Tests\Table') === FALSE) {
-          throw $e;
-        }
-        // If the class is @group annotation just skip it. Most likely it is an
-        // abstract class, trait or test fixture.
+        // If the class is missing the @group annotation just skip it. Most
+        // likely it is an abstract class, trait or test fixture.
         continue;
       }
 
@@ -113,58 +105,14 @@ exit();*/
         $list[$group][$classname] = $info;
       }
     }
-/*        foreach ($xml as $testCaseClass) {
-          $class = [];
-          $groups = explode(',', (string) $testCaseClass->children()[0]->attributes()->groups[0]);
-          $group = $groups[0];
-          $classname = (string) $testCaseClass->attributes()->name[0];
 
-          $class['name'] = $classname;
-          $class['description'] = 'fake';
-          $class['group'] = $group;
-          $class['groups'] = $groups;
-
-          $list[$group][$classname] = $class;
-        }
-    */
-
-/*    foreach ($classmap as $classname => $pathname) {
-      $finder = MockFileFinder::create($pathname);
-      $parser = new StaticReflectionParser($classname, $finder, TRUE);
-      try {
-        $info = static::getTestInfo($classname, $parser->getDocComment());
-        $info['name'] = preg_replace('/Drupal.*Tests/', '...', $info['name']);
-        $info['filename'] = $pathname;
-      }
-      catch (MissingGroupException $e) {
-        // If the class name ends in Test and is not a migrate table dump.
-        if (preg_match('/Test$/', $classname) && strpos($classname, 'migrate_drupal\Tests\Table') === FALSE) {
-          throw $e;
-        }
-        // If the class is @group annotation just skip it. Most likely it is an
-        // abstract class, trait or test fixture.
-        continue;
-      }
-
-      foreach ($info['groups'] as $group) {
-        $list[$group][$classname] = $info;
-      }
-    }
-*/
     // Sort the groups and tests within the groups by name.
     uksort($list, 'strnatcasecmp');
     foreach ($list as &$tests) {
       uksort($tests, 'strnatcasecmp');
     }
 
-/*    dump($list);
-    dump($list['#slow']);
-
-    exit();
-*/
-
     $this->testClasses = $list;
-
     return $this->testClasses;
   }
 
