@@ -123,17 +123,9 @@ function _tester_format_summary_line($summary) {
 }
 
 /**
- * Runs tests.
- *
- * @param array[] $test_list
- *   List of tests to run. The top level is keyed by type of test, either
- *   'tester' or 'phpunit'. Under that is an array of class names to run.
- *
- * @return string
- *   The test ID.
+ * @todo
  */
-function tester_run_tests($test_list) {
-
+function tester_test_run_results_storage() {
   // Set up a SQLite connection for the test runner.
   $sqlite = DRUPAL_ROOT . '/sites/tester/test-results.sqlite';
   $databases['test-runner']['default'] = [
@@ -160,6 +152,21 @@ function tester_run_tests($test_list) {
     throw new \RuntimeException('Missing Simpletest database schema. Either install Simpletest module or use the --sqlite parameter.');
   }
 
+  return $test_run_results_storage;
+}
+
+/**
+ * Runs tests.
+ *
+ * @param array[] $test_list
+ *   List of tests to run. The top level is keyed by type of test, either
+ *   'tester' or 'phpunit'. Under that is an array of class names to run.
+ *
+ * @return string
+ *   The test ID.
+ */
+function tester_run_tests($test_list) {
+
   // Clear out the previous verbose files.
   try {
     \Drupal::service('file_system')->deleteRecursive('public://tester/verbose');
@@ -171,7 +178,7 @@ function tester_run_tests($test_list) {
   $batch = [
     'title' => t('Running tests'),
     'operations' => [
-      ['_tester_batch_operation', [$test_list, $test_run_results_storage]],
+      ['_tester_batch_operation', [$test_list]],
     ],
     'finished' => '_tester_batch_finished',
     'progress_message' => '',
@@ -181,6 +188,74 @@ function tester_run_tests($test_list) {
   batch_set($batch);
 
   return $test_id;
+}
+
+/**
+ * Implements callback_batch_operation().
+ */
+function _tester_batch_operation($test_list_init, &$context) {
+  $test_run_results_storage = tester_test_run_results_storage();
+
+  // Get working values.
+  if (!isset($context['sandbox']['max'])) {
+    // First iteration: initialize working values.
+    $test_list = $test_list_init;
+    $context['sandbox']['max'] = count($test_list);
+    $test_results = ['#pass' => 0, '#fail' => 0, '#exception' => 0, '#debug' => 0];
+  }
+  else {
+    // Nth iteration: get the current values where we last stored them.
+    $test_list = $context['sandbox']['tests'];
+    $test_results = $context['sandbox']['test_results'];
+  }
+  $max = $context['sandbox']['max'];
+
+  // Perform the next test.
+  $test_class = array_shift($test_list);
+  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
+  $test_run = TestRun::createNew($test_run_results_storage);
+dump($test_class, $test_info, $test_run);exit();
+  $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
+  $phpunit_results = $runner->runTests($test_id, [$test_class]);
+  TestDatabase::processPhpUnitResults($phpunit_results);
+  $test_results[$test_class] = tester_summarize_phpunit_result($phpunit_results)[$test_class];
+  $size = count($test_list);
+  $info = TestDiscovery::getTestInfo($test_class);
+
+  // Gather results and compose the report.
+  foreach ($test_results[$test_class] as $key => $value) {
+    $test_results[$key] += $value;
+  }
+  $test_results[$test_class]['#name'] = $info['name'];
+  $items = [];
+  foreach (Element::children($test_results) as $class) {
+    $class_test_result = $test_results[$class] + [
+      '#theme' => 'tester_result_summary',
+      '#label' => t($test_results[$class]['#name'] . ':'),
+    ];
+    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
+  }
+  $context['message'] = t('Processed test @num of @max - %test.', ['%test' => $info['name'], '@num' => $max - $size, '@max' => $max]);
+  $overall_results = $test_results + [
+    '#theme' => 'tester_result_summary',
+    '#label' => t('Overall results:'),
+  ];
+  $context['message'] .= \Drupal::service('renderer')->render($overall_results);
+
+  $item_list = [
+    '#theme' => 'item_list',
+    '#items' => $items,
+  ];
+  $context['message'] .= \Drupal::service('renderer')->render($item_list);
+
+  // Save working values for the next iteration.
+  $context['sandbox']['tests'] = $test_list;
+  $context['sandbox']['test_results'] = $test_results;
+  // The test_id is the only thing we need to save for the report page.
+  $context['results']['test_id'] = $test_id;
+
+  // Multistep processing: report progress.
+  $context['finished'] = 1 - $size / $max;
 }
 
 /**
@@ -326,72 +401,6 @@ function tester_phpunit_command() {
   $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
   @trigger_error(__FUNCTION__ . ' is deprecated in drupal:8.8.0 and is removed from drupal:9.0.0. Use \Drupal\Core\Test\PhpUnitTestRunner::phpUnitCommand() instead. See https://www.drupal.org/node/2948547', E_USER_DEPRECATED);
   return $runner->phpUnitCommand();
-}
-
-/**
- * Implements callback_batch_operation().
- */
-function _tester_batch_operation($test_list_init, $test_run_results_storage, &$context) {
-
-  // Get working values.
-  if (!isset($context['sandbox']['max'])) {
-    // First iteration: initialize working values.
-    $test_list = $test_list_init;
-    $context['sandbox']['max'] = count($test_list);
-    $test_results = ['#pass' => 0, '#fail' => 0, '#exception' => 0, '#debug' => 0];
-  }
-  else {
-    // Nth iteration: get the current values where we last stored them.
-    $test_list = $context['sandbox']['tests'];
-    $test_results = $context['sandbox']['test_results'];
-  }
-  $max = $context['sandbox']['max'];
-
-  // Perform the next test.
-  $test_class = array_shift($test_list);
-  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
-  $test_run = TestRun::createNew($test_run_results_storage);
-  $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
-  $phpunit_results = $runner->runTests($test_id, [$test_class]);
-  TestDatabase::processPhpUnitResults($phpunit_results);
-  $test_results[$test_class] = tester_summarize_phpunit_result($phpunit_results)[$test_class];
-  $size = count($test_list);
-  $info = TestDiscovery::getTestInfo($test_class);
-
-  // Gather results and compose the report.
-  foreach ($test_results[$test_class] as $key => $value) {
-    $test_results[$key] += $value;
-  }
-  $test_results[$test_class]['#name'] = $info['name'];
-  $items = [];
-  foreach (Element::children($test_results) as $class) {
-    $class_test_result = $test_results[$class] + [
-      '#theme' => 'tester_result_summary',
-      '#label' => t($test_results[$class]['#name'] . ':'),
-    ];
-    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
-  }
-  $context['message'] = t('Processed test @num of @max - %test.', ['%test' => $info['name'], '@num' => $max - $size, '@max' => $max]);
-  $overall_results = $test_results + [
-    '#theme' => 'tester_result_summary',
-    '#label' => t('Overall results:'),
-  ];
-  $context['message'] .= \Drupal::service('renderer')->render($overall_results);
-
-  $item_list = [
-    '#theme' => 'item_list',
-    '#items' => $items,
-  ];
-  $context['message'] .= \Drupal::service('renderer')->render($item_list);
-
-  // Save working values for the next iteration.
-  $context['sandbox']['tests'] = $test_list;
-  $context['sandbox']['test_results'] = $test_results;
-  // The test_id is the only thing we need to save for the report page.
-  $context['results']['test_id'] = $test_id;
-
-  // Multistep processing: report progress.
-  $context['finished'] = 1 - $size / $max;
 }
 
 /**
