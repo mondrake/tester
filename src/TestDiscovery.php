@@ -53,7 +53,7 @@ class TestDiscovery extends CoreTestDiscovery {
    *     );
    * @endcode
    */
-  public function getTestClasses() {
+  public function getTestClasses($extension = NULL, array $types = []) {
     if ($this->testClasses) {
       return $this->testClasses;
     }
