@@ -171,10 +171,10 @@ class TesterResultsForm extends FormBase {
       '#url' => Url::fromRoute('tester.test_form'),
     ];
 
-    if (is_numeric($test_id)) {
+/*    if (is_numeric($test_id)) {
       $this->cleaner->cleanResultsTable($test_id);
     }
-
+*/
     return $form;
   }
 
