@@ -15,12 +15,12 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\Core\Test\JUnitConverter;
-use Drupal\Core\Test\PhpUnitTestRunner;
 use Drupal\Core\Test\TestDatabase;
 use Drupal\Core\Url;
 use Drupal\tester\Form\TesterResultsForm;
-use Drupal\tester\TestDiscovery;
+use Drupal\tester\PhpUnitTestRunner;
 use Drupal\tester\SimpletestTestRunResultsStorage;
+use Drupal\tester\TestDiscovery;
 use Drupal\tester\TestRun;
 use PHPUnit\Framework\TestCase;
 
@@ -168,16 +168,10 @@ function tester_run_tests($test_list) {
     // Ignore failed deletes.
   }
 
-  // Get the info for the first test being run.
-  $first_test = reset($test_list);
-  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($first_test);
-  $test_run = TestRun::createNew($test_run_results_storage);
-dump($first_test, $test_info, $test_run); exit();
-
   $batch = [
     'title' => t('Running tests'),
     'operations' => [
-      ['_tester_batch_operation', [$test_list, $test_id]],
+      ['_tester_batch_operation', [$test_list, $test_run_results_storage]],
     ],
     'finished' => '_tester_batch_finished',
     'progress_message' => '',
@@ -337,8 +331,8 @@ function tester_phpunit_command() {
 /**
  * Implements callback_batch_operation().
  */
-function _tester_batch_operation($test_list_init, $test_id, &$context) {
-  \Drupal::service('test_discovery')->registerTestNamespaces();
+function _tester_batch_operation($test_list_init, $test_run_results_storage, &$context) {
+
   // Get working values.
   if (!isset($context['sandbox']['max'])) {
     // First iteration: initialize working values.
@@ -355,18 +349,12 @@ function _tester_batch_operation($test_list_init, $test_id, &$context) {
 
   // Perform the next test.
   $test_class = array_shift($test_list);
-  if (is_subclass_of($test_class, TestCase::class)) {
-    $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
-    $phpunit_results = $runner->runTests($test_id, [$test_class]);
-    TestDatabase::processPhpUnitResults($phpunit_results);
-    $test_results[$test_class] = tester_summarize_phpunit_result($phpunit_results)[$test_class];
-  }
-  else {
-    $test = new $test_class($test_id);
-    $test->run();
-    \Drupal::moduleHandler()->invokeAllDeprecated('Convert your test to a PHPUnit-based one and implement test listeners. See https://www.drupal.org/node/2934242', 'test_finished', [$test->results]);
-    $test_results[$test_class] = $test->results;
-  }
+  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
+  $test_run = TestRun::createNew($test_run_results_storage);
+  $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
+  $phpunit_results = $runner->runTests($test_id, [$test_class]);
+  TestDatabase::processPhpUnitResults($phpunit_results);
+  $test_results[$test_class] = tester_summarize_phpunit_result($phpunit_results)[$test_class];
   $size = count($test_list);
   $info = TestDiscovery::getTestInfo($test_class);
 
