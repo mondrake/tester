@@ -133,7 +133,6 @@ function _tester_format_summary_line($summary) {
  *   The test ID.
  */
 function tester_run_tests($test_list) {
-dump($test_list);
 
   // Set up a SQLite connection for the test runner.
   $sqlite = DRUPAL_ROOT . '/sites/tester/test-results.sqlite';
@@ -160,7 +159,6 @@ dump($test_list);
   if (!$test_run_results_storage->validateTestingResultsEnvironment()) {
     throw new \RuntimeException('Missing Simpletest database schema. Either install Simpletest module or use the --sqlite parameter.');
   }
-dump($test_run_results_storage);
 
   // Clear out the previous verbose files.
   try {
@@ -172,7 +170,7 @@ dump($test_run_results_storage);
 
   // Get the info for the first test being run.
   $first_test = reset($test_list);
-  $info = TestDiscovery::getTestInfo($first_test);
+  $info = TestDiscovery::getTestClasses()[$first_test];
   $test_run = TestRun::createNew($test_run_results_storage);
 dump($test_run, $info); exit();
 
