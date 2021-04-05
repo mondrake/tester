@@ -8,7 +8,7 @@ services:
   tester.exec_manager:
     class: Drupal\tester\ExecManager
     arguments: ['@logger.channel.tester', '@config.factory', '@app.root', '@current_user', '@messenger']
-  testre.environment_cleaner_factory:
+  tester.environment_cleaner_factory:
     class: Drupal\tester\EnvironmentCleanerFactory
     arguments: ['@service_container']
   tester.environment_cleaner:
