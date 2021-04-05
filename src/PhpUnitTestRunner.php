@@ -188,25 +188,19 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
   }
 
   /**
-   * Executes PHPUnit tests and returns the results of the run.
-   *
-   * @param \Drupal\Core\Test\TestRun $test_run
-   *   The test run object.
-   * @param string[] $unescaped_test_classnames
-   *   An array of test class names, including full namespaces, to be passed as
-   *   a regular expression to PHPUnit's --filter option.
-   * @param int $status
-   *   (optional) The exit status code of the PHPUnit process will be assigned
-   *   to this variable.
-   *
-   * @return array
-   *   The parsed results of PHPUnit's JUnit XML output, in the format of
-   *   {simpletest}'s schema.
-   *
-   * @internal
+   * @todo
    */
-  public function execute(TestRun $test_run, array $unescaped_test_classnames, int &$status = NULL): array {
+  public function execute(TestRun $test_run, string $filename, int &$status = NULL): array {
     $phpunit_file = $this->xmlLogFilePath($test_run->id());
+
+    $command_ret = \Drupal::service('tester.exec_manager')->execute('phpunit', [
+      '-c',
+      'core',
+      '-v',
+      $filename,
+    ], $output, $error);
+dump($filename, $phpunit_file, $output, $error);exit();
+
     // Store output from our test run.
     $output = [];
     $this->runCommand($unescaped_test_classnames, $phpunit_file, $status, $output);

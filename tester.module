@@ -214,9 +214,8 @@ function _tester_batch_operation($test_list_init, &$context) {
   $test_class = array_shift($test_list);
   $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
   $test_run = TestRun::createNew($test_run_results_storage);
-//dump($test_class, $test_info, $test_run);exit();
   $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
-  $phpunit_results = $runner->execute($test_run, [$test_class]);
+  $phpunit_results = $runner->execute($test_run, $test_info['filename']);
   TestDatabase::processPhpUnitResults($phpunit_results);
   $test_results[$test_class] = tester_summarize_phpunit_result($phpunit_results)[$test_class];
   $size = count($test_list);
