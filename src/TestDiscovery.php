@@ -132,10 +132,11 @@ class TestDiscovery extends CoreTestDiscovery {
       uksort($tests, 'strnatcasecmp');
     }
 
-    dump($list);
+/*    dump($list);
     dump($list['#slow']);
 
     exit();
+*/
 
     $this->testClasses = $list;
 
