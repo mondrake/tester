@@ -132,6 +132,7 @@ class TestDiscovery extends CoreTestDiscovery {
     }
 
     dump($list);
+    dump($list['#slow']);
 
     exit();
 
