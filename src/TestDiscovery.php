@@ -74,7 +74,7 @@ class TestDiscovery extends CoreTestDiscovery {
       $parser = new StaticReflectionParser($classname, $finder, TRUE);
       try {
         $info = static::getTestInfo($classname, $parser->getDocComment());
-        $info['name'] = str_replace('\Drupal\Tests', '...', $info['name']);
+        $info['name'] = preg_replace('Drupal\\.*Tests', '...', $info['name']);
         $info['filename'] = $pathname;
       }
       catch (MissingGroupException $e) {
