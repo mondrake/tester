@@ -65,6 +65,7 @@ class TestDiscovery extends CoreTestDiscovery {
     }
 
     $list = [];
+    $full_info = [];
 
     // Discovers all test class files in all available extensions.
     $classmap = $this->findAllClassFiles();
@@ -84,6 +85,7 @@ class TestDiscovery extends CoreTestDiscovery {
         $info = static::getTestInfo($classname, $parser->getDocComment());
         $info['name'] = preg_replace('/Drupal.*Tests/', '...', $info['name']);
         $info['filename'] = $pathname;
+        $full_info[$classname] = $info;
       }
       catch (MissingGroupException $e) {
         // If the class is missing the @group annotation just skip it. Most
@@ -103,8 +105,18 @@ class TestDiscovery extends CoreTestDiscovery {
     }
 
     $this->testClasses = $list;
+    $this->cache->set("tester:test_classes_info", $full_info, Cache::PERMANENT);
     $this->cache->set("tester:test_classes", $this->testClasses, Cache::PERMANENT);
     return $this->testClasses;
+  }
+
+  /**
+   * @todo
+   */
+  public function getTestClassInfo(string $classname = NULL) {
+    if ($cache = $this->cache->get("tester:test_classes_info")) {
+      return $classname ? $cache->data[$classname] : $cache->data;
+    }
   }
 
   /**
