@@ -131,6 +131,7 @@ function _tester_format_summary_line($summary) {
  *   The test ID.
  */
 function tester_run_tests($test_list) {
+dump($test_list); exit();
   // We used to separate PHPUnit and Tester tests for a performance
   // optimization. In order to support backwards compatibility check if these
   // keys are set and create a single test list.
