@@ -172,7 +172,7 @@ function tester_run_tests($test_list) {
   $first_test = reset($test_list);
   $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($first_test);
   $test_run = TestRun::createNew($test_run_results_storage);
-dump($first_test, $info, $test_run); exit();
+dump($first_test, $test_info, $test_run); exit();
 
   $batch = [
     'title' => t('Running tests'),
