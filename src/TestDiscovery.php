@@ -69,6 +69,43 @@ class TestDiscovery extends CoreTestDiscovery {
     // pathnames; a namespace/classname mismatch will throw an exception.
     $this->classLoader->addClassMap($classmap);
 
+    // Executes PHPUnit with --list-tests-xml option to retrieve all the test
+    // classes that can be run.
+    $list_command_ret = $this->execManager->execute('phpunit', [
+      '-c',
+      'core',
+      '--list-tests-xml',
+      'sites/tester/list-tests.xml',
+    ], $output, $error);
+
+    // Load the output XML for processing.
+    $contents = @file_get_contents('sites/tester/list-tests.xml');
+    if (!$contents) {
+      return [];
+    }
+    $xml = new \SimpleXMLElement($contents);
+
+    foreach ($xml as $test_case_class) {
+dump($test_case_class);
+dump((string) $test_case_class->attributes()->name[0]);
+dump($classmap);
+exit();
+    }
+/*        foreach ($xml as $testCaseClass) {
+          $class = [];
+          $groups = explode(',', (string) $testCaseClass->children()[0]->attributes()->groups[0]);
+          $group = $groups[0];
+          $classname = (string) $testCaseClass->attributes()->name[0];
+
+          $class['name'] = $classname;
+          $class['description'] = 'fake';
+          $class['group'] = $group;
+          $class['groups'] = $groups;
+
+          $list[$group][$classname] = $class;
+        }
+    */
+
     foreach ($classmap as $classname => $pathname) {
       $finder = MockFileFinder::create($pathname);
       $parser = new StaticReflectionParser($classname, $finder, TRUE);
@@ -91,40 +128,6 @@ class TestDiscovery extends CoreTestDiscovery {
         $list[$group][$classname] = $info;
       }
     }
-
-
-
-/*
-
-    $list_command_ret = $this->execManager->execute('phpunit', [
-      '-c',
-      'core',
-      '--list-tests-xml',
-      'sites/tester/list-tests.xml',
-    ], $output, $error);
-
-//    dump([$output, $error]);
-
-    $contents = @file_get_contents('sites/tester/list-tests.xml');
-    if (!$contents) {
-      return [];
-    }
-    $xml = new \SimpleXMLElement($contents);
-
-    foreach ($xml as $testCaseClass) {
-      $class = [];
-      $groups = explode(',', (string) $testCaseClass->children()[0]->attributes()->groups[0]);
-      $group = $groups[0];
-      $classname = (string) $testCaseClass->attributes()->name[0];
-
-      $class['name'] = $classname;
-      $class['description'] = 'fake';
-      $class['group'] = $group;
-      $class['groups'] = $groups;
-
-      $list[$group][$classname] = $class;
-    }
-*/
 
     // Sort the groups and tests within the groups by name.
     uksort($list, 'strnatcasecmp');
