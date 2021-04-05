@@ -201,7 +201,7 @@ class TesterTestForm extends FormBase {
         ];
         $form['tests'][$class]['title'] = [
           '#type' => 'label',
-          '#title' => '\\' . $info['name'],
+          '#title' => $info['name'],
           '#wrapper_attributes' => [
             'class' => ['tester-test-label', 'table-filter-text-source'],
           ],
