@@ -5,6 +5,7 @@ namespace Drupal\tester;
 use Drupal\Core\Database\Database;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Tests\Listeners\SimpletestUiPrinter;
+use Drupal\Core\Test\TestStatus;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -190,7 +191,7 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
   /**
    * @todo
    */
-  public function execute(TestRun $test_run, string $filename, int &$status = NULL): array {
+  public function execute(TestRun $test_run, string $filename, string $classname, int &$status = NULL): array {
     $phpunit_file = $this->xmlLogFilePath($test_run->id());
 
     $command_ret = \Drupal::service('tester.exec_manager')->execute('phpunit', [
@@ -199,11 +200,23 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
       '-v',
       $filename,
     ], $output, $error);
-dump($filename, $phpunit_file, $output, $error);exit();
+//dump($filename, $phpunit_file, $output, $error);exit();
 
+    return [
+      [
+        'test_id' => $test_run->id(),
+        'test_class' => $classname,
+        'status' => TestStatus::label($command_ret),
+        'message' => $output,
+        'message_group' => 'PHPUnit',
+        'function' => $classname,
+        'line' => '0',
+        'file' => $phpunit_file,
+      ],
+    ];
     // Store output from our test run.
-    $output = [];
-    $this->runCommand($unescaped_test_classnames, $phpunit_file, $status, $output);
+//    $output = [];
+//    $this->runCommand($unescaped_test_classnames, $phpunit_file, $status, $output);
 
     if ($status == TestStatus::PASS) {
       return JUnitConverter::xmlToRows($test_run->id(), $phpunit_file);
