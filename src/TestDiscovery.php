@@ -115,7 +115,6 @@ class TestDiscovery extends CoreTestDiscovery {
    */
   public function getTestClassInfo(string $classname = NULL) {
     if ($cache = $this->cache->get("tester:test_classes_info")) {
-dump($classname, $cache->data[$classname]);
       return $classname ? $cache->data[$classname] : $cache->data;
     }
   }
