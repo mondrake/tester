@@ -253,6 +253,22 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
           'default' => '',
           'description' => 'Name of the file where the function is called.',
         ],
+        'exit_code' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 0,
+          'description' => 'The exit code of the test process.',
+        ],
+        'process_output' => [
+          'type' => 'text',
+          'not null' => TRUE,
+          'description' => 'The console output of the test process.',
+        ],
+        'process_output' => [
+          'type' => 'text',
+          'not null' => FALSE,
+          'description' => 'The console error of the test process.',
+        ],
       ],
       'primary key' => ['message_id'],
       'indexes' => [
