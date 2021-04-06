@@ -289,12 +289,8 @@ class TesterResultsForm extends FormBase {
 
     // Cycle through each test group.
     $header = [
-      'Message',
-      'Group',
-      'Filename',
-      'Line',
-      'Function',
       ['colspan' => 2, 'data' => 'Status'],
+      'Message',
     ];
     $form['result']['results'] = [];
     foreach ($test_results as $group => $assertions) {
@@ -315,12 +311,8 @@ class TesterResultsForm extends FormBase {
       $rows = [];
       foreach ($assertions as $assertion) {
         $row = [];
-        $row[] = ['data' => ['#markup' => $assertion->message]];
-        $row[] = $assertion->message_group;
-        $row[] = \Drupal::service('file_system')->basename(($assertion->file));
-        $row[] = $assertion->line;
-        $row[] = $assertion->function;
         $row[] = ['data' => $image_status_map[$assertion->status]];
+        $row[] = ['data' => ['#markup' => '<pre>' . $assertion->message . '</pre>']];
 
         $class = 'tester-' . $assertion->status;
         if ($assertion->message_group == 'Debug') {

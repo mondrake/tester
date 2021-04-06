@@ -156,46 +156,6 @@ function tester_test_run_results_storage() {
 }
 
 /**
- * Runs tests.
- *
- * @param array[] $test_list
- *   List of tests to run. The top level is keyed by type of test, either
- *   'tester' or 'phpunit'. Under that is an array of class names to run.
- *
- * @return string
- *   The test ID.
- */
-function tester_run_tests($test_list) {
-
-  $test_run_results_storage = tester_test_run_results_storage();
-  $test_class = reset($test_list);
-  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
-  $test_run = TestRun::createNew($test_run_results_storage);
-
-  // Clear out the previous verbose files.
-  try {
-    \Drupal::service('file_system')->deleteRecursive('public://tester/verbose');
-  }
-  catch (FileException $e) {
-    // Ignore failed deletes.
-  }
-
-  $batch = [
-    'title' => t('Running tests'),
-    'operations' => [
-      ['_tester_batch_operation', [$test_run->id(), $test_list]],
-    ],
-    'finished' => '_tester_batch_finished',
-    'progress_message' => '',
-    'library' => ['tester/tester'],
-    'init_message' => t('Processing test @num of @max - %test.', ['%test' => $test_info['name'], '@num' => '1', '@max' => count($test_list)]),
-  ];
-  batch_set($batch);
-
-  return $test_run->id();
-}
-
-/**
  * Implements callback_batch_operation().
  */
 function _tester_batch_operation($test_id, $test_list_init, &$context) {

@@ -251,9 +251,48 @@ class TesterTestForm extends FormBase {
 
     $tests_list = array_filter($form_state->getValue('tests'));
     if (!empty($tests_list)) {
-      $test_id = tester_run_tests($tests_list);
+      $test_id = $this->runTests($tests_list);
       $form_state->setRedirect('tester.result_form', ['test_id' => $test_id]);
     }
+  }
+
+  /**
+   * Runs tests.
+   *
+   * @param array[] $test_list
+   *   List of test classes to run.
+   *
+   * @return int
+   *   The test ID.
+   */
+  function runTests(array $test_list): int {
+
+    $test_run_results_storage = tester_test_run_results_storage();
+    $test_class = $test_list[0];
+    $test_info = $this->testDiscovery->getTestClassInfo($test_class);
+    $test_run = TestRun::createNew($test_run_results_storage);
+
+    // Clear out the previous verbose files.
+    try {
+      \Drupal::service('file_system')->deleteRecursive('public://tester/verbose');
+    }
+    catch (FileException $e) {
+      // Ignore failed deletes.
+    }
+
+    $batch = [
+      'title' => t('Running tests'),
+      'operations' => [
+        ['_tester_batch_operation', [$test_run->id(), $test_list]],
+      ],
+      'finished' => '_tester_batch_finished',
+      'progress_message' => '',
+      'library' => ['tester/tester'],
+      'init_message' => t('Processing test @num of @max - %test.', ['%test' => $test_info['name'], '@num' => '1', '@max' => count($test_list)]),
+    ];
+    batch_set($batch);
+
+    return $test_run->id();
   }
 
 }
