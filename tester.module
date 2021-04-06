@@ -145,7 +145,7 @@ function tester_test_run_results_storage() {
 
   // Create the Simpletest schema.
   $test_run_results_storage = new SimpletestTestRunResultsStorage(Database::getConnection('default', 'test-runner'));
-  $test_run_results_storage->buildTestingResultsEnvironment(FALSE);
+  $test_run_results_storage->buildTestingResultsEnvironment(TRUE);
 
   // Verify that the Simpletest database schema exists by checking one table.
   if (!$test_run_results_storage->validateTestingResultsEnvironment()) {
