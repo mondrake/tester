@@ -231,7 +231,7 @@ dump($test_id);
    */
   protected function getResults($test_id) {
     $test_run = TestRun::get(tester_test_run_results_storage(), $test_id);
-dump($test_id, $test_run);
+dump($test_id, $test_run, $test_run->getLogEntriesByTestClass());exit();
     return $test_run->getLogEntriesByTestClass();
   }
 
