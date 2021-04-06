@@ -127,7 +127,8 @@ class ExecManager {
       $return_code = $process->getExitCode() ? $process->getExitCode() : 1;
     }
     $execution_time = Timer::stop('tester:runOsShell')['time'];
-dump($output, $error, $return_code, $execution_time); exit();
+dump($output, $error, $return_code, $execution_time);
+
     return $return_code;
   }
 
