@@ -4,6 +4,7 @@ namespace Drupal\tester;
 
 use Drupal\Component\Utility\Timer;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -113,8 +114,13 @@ class ExecManager {
     $output = '';
     $error = '';
 
+    $process_environment_variables = [
+      'SIMPLETEST_DB' => Database::getConnectionInfoAsUrl(),
+    ];
+
     Timer::start('tester:runOsShell');
-    $process = new Process($command_line, $this->appRoot);
+    $process = new Process($command_line, $this->appRoot, $process_environment_variables);
+    $process->inheritEnvironmentVariables();
     $process->setTimeout($this->timeout);
     try {
       $process->run();
