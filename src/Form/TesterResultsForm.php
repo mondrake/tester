@@ -40,6 +40,13 @@ class TesterResultsForm extends FormBase {
   protected $database;
 
   /**
+   * The test discovery service.
+   *
+   * @var \Drupal\tester\TestDiscovery
+   */
+  protected $testDiscovery;
+
+  /**
    * The environment cleaner service.
    *
    * @var \Drupal\tester\EnvironmentCleanerInterface
@@ -51,7 +58,8 @@ class TesterResultsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('database') //,
+      $container->get('database'),
+      $container->get('tester.test_discovery')
 //      $container->get('tester.environment_cleaner')
     );
   }
@@ -61,9 +69,12 @@ class TesterResultsForm extends FormBase {
    *
    * @param \Drupal\Core\Database\Connection $database
    *   The database connection service.
+   * @param \Drupal\tester\TestDiscovery $test_discovery
+   *   The test discovery service.
    */
-  public function __construct(Connection $database /*, EnvironmentCleanerInterface $cleaner */) {
+  public function __construct(Connection $database, TestDiscovery $test_discovery /*, EnvironmentCleanerInterface $cleaner */) {
     $this->database = $database;
+    $this->testDiscovery = $test_discovery;
 //    $this->cleaner = $cleaner;
   }
 
@@ -289,20 +300,18 @@ class TesterResultsForm extends FormBase {
 
     // Cycle through each test group.
     $header = [
-      ['colspan' => 2, 'data' => 'Status'],
+      'Status',
       'Message',
     ];
     $form['result']['results'] = [];
     foreach ($test_results as $group => $assertions) {
       // Create group details with summary information.
-//      $info = TestDiscovery::getTestInfo($group);
+      $info = $this->testDiscovery->getTestInfo($group);
       $form['result']['results'][$group] = [
         '#type' => 'details',
-//        '#title' => $info['name'],
-        '#title' => 'name',
+        '#title' => $info['name'],
         '#open' => TRUE,
-//        '#description' => $info['description'],
-        '#description' => 'description',
+        '#description' => $info['description'],
       ];
       $form['result']['results'][$group]['summary'] = $summary;
       $group_summary =& $form['result']['results'][$group]['summary'];
