@@ -38,6 +38,7 @@ class EnvironmentCleanerFactory {
    *   The environment cleaner service.
    */
   public function createCleaner() {
+    tester_test_run_results_storage();
     $cleaner = new EnvironmentCleanerService(
       $this->container->get('app.root'),
       Database::getConnection(),
