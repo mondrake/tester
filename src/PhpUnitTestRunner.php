@@ -200,7 +200,6 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
       '-v',
       $filename,
     ], $output, $error);
-//dump($filename, $phpunit_file, $output, $error);exit();
 
     return [
       [
