@@ -125,7 +125,7 @@ class TesterResultsForm extends FormBase {
       $this->messenger()->addError($this->t('No test results to display.'));
       return $this->redirect('tester.test_form');
     }
-dump($results); exit();
+
     // Load all classes and include CSS.
     $form['#attached']['library'][] = 'tester/tester';
     // Add the results form.
