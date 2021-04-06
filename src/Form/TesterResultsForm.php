@@ -229,7 +229,7 @@ dump($results); exit();
    *   Array of results grouped by test_class.
    */
   protected function getResults($test_id) {
-    $test_run = TestRun::get(tester_test_run_results_storage(), $test_id + 1);
+    $test_run = TestRun::get(tester_test_run_results_storage(), $test_id);
     return $test_run->getLogEntriesByTestClass();
   }
 
