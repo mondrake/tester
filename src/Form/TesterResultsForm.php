@@ -230,10 +230,8 @@ dump($test_id);
    *   Array of results grouped by test_class.
    */
   protected function getResults($test_id) {
+    tester_test_run_results_storage()->xdump();
     $test_run = TestRun::get(tester_test_run_results_storage(), $test_id);
-dump($test_id, $test_run, $test_run->getLogEntriesByTestClass());
-    $test_runx = TestRun::get(tester_test_run_results_storage(), $test_id + 1);
-dump($test_runx, $test_runx->getLogEntriesByTestClass());exit();
     return $test_run->getLogEntriesByTestClass();
   }
 

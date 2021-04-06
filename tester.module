@@ -266,7 +266,6 @@ function _tester_batch_operation($test_list_init, &$context) {
  * Implements callback_batch_finished().
  */
 function _tester_batch_finished($success, $results, $operations, $elapsed) {
-dump([$success, $results, $operations, $elapsed]);
   if ($success) {
     \Drupal::messenger()->addStatus(t('The test run finished in @elapsed.', ['@elapsed' => $elapsed]));
   }

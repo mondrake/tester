@@ -127,6 +127,20 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
       ->execute()
       ->fetchAll();
   }
+  
+  public function xdump() {
+    dump($this->connection->select('simpletest_test_id')
+      ->fields('simpletest_test_id')
+      ->orderBy('test_id')
+      ->execute()
+      ->fetchAll());
+    dump($this->connection->select('simpletest')
+      ->fields('simpletest')
+      ->orderBy('message_id')
+      ->execute()
+      ->fetchAll());
+    exit();
+  }
 
   /**
    * {@inheritdoc}
