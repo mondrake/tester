@@ -156,7 +156,6 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
   public function buildTestingResultsEnvironment(bool $keep_results): void {
     $schema = $this->connection->schema();
     foreach (static::testingResultsSchema() as $name => $table_spec) {
-dump($name, $table_spec); exit();
       $table_exists = $schema->tableExists($name);
       if (!$keep_results && $table_exists) {
         $this->connection->truncate($name)->execute();
@@ -265,7 +264,7 @@ dump($name, $table_spec); exit();
           'not null' => TRUE,
           'description' => 'The console output of the test process.',
         ],
-        'process_output' => [
+        'process_error' => [
           'type' => 'text',
           'not null' => FALSE,
           'description' => 'The console error of the test process.',
