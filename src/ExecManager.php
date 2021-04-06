@@ -100,7 +100,7 @@ class ExecManager {
   /**
    * {@inheritdoc}
    */
-  public function execute(string $command, array $arguments, string &$output = NULL, string &$error = NULL, string $path = NULL): bool {
+  public function execute(string $command, array $arguments, string &$output = NULL, string &$error = NULL, string $path = NULL): int {
     $cmd = $this->getExecutable($command, $path);
     return $this->runOsShell($cmd, $arguments, $output, $error);
   }
@@ -127,7 +127,6 @@ class ExecManager {
       $return_code = $process->getExitCode() ? $process->getExitCode() : 1;
     }
     $execution_time = Timer::stop('tester:runOsShell')['time'];
-dump($output, $error, $return_code, $execution_time);
 
     return $return_code;
   }
