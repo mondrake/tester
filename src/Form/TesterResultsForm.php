@@ -113,6 +113,7 @@ class TesterResultsForm extends FormBase {
     return [
       'pass' => $image_pass,
       'fail' => $image_fail,
+      'error' => $image_exception,
       'exception' => $image_exception,
       'debug' => $image_debug,
     ];
@@ -304,7 +305,7 @@ class TesterResultsForm extends FormBase {
       'Message',
     ];
     $form['result']['results'] = [];
-dump($test_results);
+
     foreach ($test_results as $group => $assertions) {
       // Create group details with summary information.
       $info = \Drupal::service('tester.test_discovery')->getTestClassInfo($group);
