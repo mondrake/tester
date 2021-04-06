@@ -192,7 +192,7 @@ function tester_run_tests($test_list) {
   ];
   batch_set($batch);
 
-  return $test_run->id();
+  return $test_run->id() + 1;
 }
 
 /**

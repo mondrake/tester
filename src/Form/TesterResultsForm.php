@@ -118,7 +118,6 @@ class TesterResultsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $test_id = NULL) {
-dump($test_id);
     // Make sure there are test results to display and a re-run is not being
     // performed.
     $results = [];
@@ -126,6 +125,7 @@ dump($test_id);
       $this->messenger()->addError($this->t('No test results to display.'));
       return $this->redirect('tester.test_form');
     }
+dump($results);
 
     // Load all classes and include CSS.
     $form['#attached']['library'][] = 'tester/tester';
@@ -230,7 +230,6 @@ dump($test_id);
    *   Array of results grouped by test_class.
    */
   protected function getResults($test_id) {
-    tester_test_run_results_storage()->xdump();
     $test_run = TestRun::get(tester_test_run_results_storage(), $test_id);
     return $test_run->getLogEntriesByTestClass();
   }
