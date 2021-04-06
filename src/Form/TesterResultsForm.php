@@ -287,8 +287,6 @@ dump($results);
       '#debug' => 0,
     ];
 
-    \Drupal::service('test_discovery')->registerTestNamespaces();
-
     // Cycle through each test group.
     $header = [
       'Message',
@@ -301,12 +299,14 @@ dump($results);
     $form['result']['results'] = [];
     foreach ($test_results as $group => $assertions) {
       // Create group details with summary information.
-      $info = TestDiscovery::getTestInfo($group);
+//      $info = TestDiscovery::getTestInfo($group);
       $form['result']['results'][$group] = [
         '#type' => 'details',
-        '#title' => $info['name'],
+//        '#title' => $info['name'],
+        '#title' => 'name',
         '#open' => TRUE,
-        '#description' => $info['description'],
+//        '#description' => $info['description'],
+        '#description' => 'description',
       ];
       $form['result']['results'][$group]['summary'] = $summary;
       $group_summary =& $form['result']['results'][$group]['summary'];
