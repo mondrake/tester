@@ -306,7 +306,7 @@ class TesterResultsForm extends FormBase {
     $form['result']['results'] = [];
     foreach ($test_results as $group => $assertions) {
       // Create group details with summary information.
-      $info = $this->testDiscovery->getTestInfo($group);
+      $info = \Drupal::service('tester.test_discovery')->getTestInfo($group);
       $form['result']['results'][$group] = [
         '#type' => 'details',
         '#title' => $info['name'],
