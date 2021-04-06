@@ -51,8 +51,8 @@ class TesterResultsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('database'),
-      $container->get('tester.environment_cleaner')
+      $container->get('database') //,
+//      $container->get('tester.environment_cleaner')
     );
   }
 
@@ -62,9 +62,9 @@ class TesterResultsForm extends FormBase {
    * @param \Drupal\Core\Database\Connection $database
    *   The database connection service.
    */
-  public function __construct(Connection $database, EnvironmentCleanerInterface $cleaner) {
+  public function __construct(Connection $database /*, EnvironmentCleanerInterface $cleaner */) {
     $this->database = $database;
-    $this->cleaner = $cleaner;
+//    $this->cleaner = $cleaner;
   }
 
   /**
@@ -118,6 +118,7 @@ class TesterResultsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $test_id = NULL) {
+dump($test_id);
     // Make sure there are test results to display and a re-run is not being
     // performed.
     $results = [];
@@ -230,6 +231,7 @@ class TesterResultsForm extends FormBase {
    */
   protected function getResults($test_id) {
     $test_run = TestRun::get(tester_test_run_results_storage(), $test_id);
+dump($test_id, $test_run);
     return $test_run->getLogEntriesByTestClass();
   }
 
