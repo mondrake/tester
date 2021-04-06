@@ -269,7 +269,7 @@ class TesterTestForm extends FormBase {
   function runTests(array $test_list): int {
 
     $test_run_results_storage = tester_test_run_results_storage();
-    $test_class = $test_list[0];
+    $test_class = reset($test_list);
     $test_info = $this->testDiscovery->getTestClassInfo($test_class);
     $test_run = TestRun::createNew($test_run_results_storage);
 
