@@ -321,7 +321,8 @@ class TesterResultsForm extends FormBase {
       foreach ($assertions as $assertion) {
         $row = [];
         $row[] = ['data' => $image_status_map[$assertion->status]];
-        $row[] = ['data' => ['#markup' => '<pre>' . $assertion->message . '</pre>']];
+        $message = $assertion->exit_code < 3 ? $assertion->process_output : $assertion->process_error;
+        $row[] = ['data' => ['#markup' => '<pre>' . $message . '</pre>']];
 
         $class = 'tester-' . $assertion->status;
         if ($assertion->message_group == 'Debug') {
