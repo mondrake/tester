@@ -266,6 +266,7 @@ function _tester_batch_operation($test_list_init, &$context) {
  * Implements callback_batch_finished().
  */
 function _tester_batch_finished($success, $results, $operations, $elapsed) {
+dump([$success, $results, $operations, $elapsed]);exit();
   if ($success) {
     \Drupal::messenger()->addStatus(t('The test run finished in @elapsed.', ['@elapsed' => $elapsed]));
   }
@@ -282,5 +283,4 @@ function _tester_batch_finished($success, $results, $operations, $elapsed) {
     \Drupal::messenger()->addError(t('The test run did not successfully finish.'));
     \Drupal::messenger()->addWarning(t('Use the <em>Clean environment</em> button to clean-up temporary files and tables.'));
   }
-  \Drupal::moduleHandler()->invokeAllDeprecated('Convert your test to a PHPUnit-based one and implement test listeners. See https://www.drupal.org/node/2934242', 'test_group_finished');
 }
