@@ -183,7 +183,7 @@ function tester_run_tests($test_list) {
   $batch = [
     'title' => t('Running tests'),
     'operations' => [
-      ['_tester_batch_operation', [$test_run, $test_list]],
+      ['_tester_batch_operation', [$test_run->id(), $test_list]],
     ],
     'finished' => '_tester_batch_finished',
     'progress_message' => '',
@@ -198,7 +198,8 @@ function tester_run_tests($test_list) {
 /**
  * Implements callback_batch_operation().
  */
-function _tester_batch_operation($test_run, $test_list_init, &$context) {
+function _tester_batch_operation($test_id, $test_list_init, &$context) {
+  $test_run_results_storage = tester_test_run_results_storage();
 
   // Get working values.
   if (!isset($context['sandbox']['max'])) {
@@ -217,6 +218,7 @@ function _tester_batch_operation($test_run, $test_list_init, &$context) {
   // Perform the next test.
   $test_class = array_shift($test_list);
   $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
+  $test_run = TestRun::get($test_run_results_storage, $test_id);
   $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
   $phpunit_results = $runner->execute($test_run, $test_info['filename'], $test_class);
   $runner->processPhpUnitResults($test_run, $phpunit_results);
