@@ -261,7 +261,7 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
         ],
         'process_output' => [
           'type' => 'text',
-          'not null' => TRUE,
+          'not null' => FALSE,
           'description' => 'The console output of the test process.',
         ],
         'process_error' => [
