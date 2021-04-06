@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\tester\EnvironmentCleanerInterface;
 use Drupal\Core\Url;
 use Drupal\tester\TestDiscovery;
+use Drupal\tester\TestRun;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -124,7 +125,7 @@ class TesterResultsForm extends FormBase {
       $this->messenger()->addError($this->t('No test results to display.'));
       return $this->redirect('tester.test_form');
     }
-
+dump($results); exit();
     // Load all classes and include CSS.
     $form['#attached']['library'][] = 'tester/tester';
     // Add the results form.
@@ -228,13 +229,8 @@ class TesterResultsForm extends FormBase {
    *   Array of results grouped by test_class.
    */
   protected function getResults($test_id) {
-    return $this->database->select('tester')
-      ->fields('tester')
-      ->condition('test_id', $test_id)
-      ->orderBy('test_class')
-      ->orderBy('message_id')
-      ->execute()
-      ->fetchAll();
+    $test_run = TestRun::get(tester_test_run_results_storage(), $test_id);
+    return $test_run->getLogEntriesByTestClass();
   }
 
   /**
