@@ -211,6 +211,9 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
         'function' => $classname,
         'line' => '0',
         'file' => $phpunit_file,
+        'exit_code' => $command_ret,
+        'process_output' => $output,
+        'process_error' => $error,
       ],
     ];
     // Store output from our test run.
