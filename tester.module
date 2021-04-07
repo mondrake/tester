@@ -19,7 +19,7 @@ use Drupal\Core\Test\TestDatabase;
 use Drupal\Core\Url;
 use Drupal\tester\Form\TesterResultsForm;
 use Drupal\tester\PhpUnitTestRunner;
-use Drupal\tester\SimpletestTestRunResultsStorage;
+use Drupal\tester\TestRunResultsStorage;
 use Drupal\tester\TestDiscovery;
 use Drupal\tester\TestRun;
 use PHPUnit\Framework\TestCase;
@@ -144,7 +144,7 @@ function tester_test_run_results_storage() {
   Database::addConnectionInfo('test-runner', 'default', $databases['test-runner']['default']);
 
   // Create the Simpletest schema.
-  $test_run_results_storage = new SimpletestTestRunResultsStorage(Database::getConnection('default', 'test-runner'));
+  $test_run_results_storage = new TestRunResultsStorage(Database::getConnection('default', 'test-runner'));
   $test_run_results_storage->buildTestingResultsEnvironment(TRUE);
 
   // Verify that the Simpletest database schema exists by checking one table.

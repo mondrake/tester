@@ -167,49 +167,4 @@ class TestRun {
     return $this->testRunResultsStorage->removeResults($this);
   }
 
-  /**
-   * Reads the PHP error log and reports any errors as assertion failures.
-   *
-   * The errors in the log should only be fatal errors since any other errors
-   * will have been recorded by the error handler.
-   *
-   * @param string $error_log_path
-   *   The path of log file.
-   * @param string $test_class
-   *   The test class to which the log relates.
-   *
-   * @return bool
-   *   Whether any fatal errors were found.
-   */
-  public function processPhpErrorLogFile(string $error_log_path, string $test_class): bool {
-    $found = FALSE;
-    if (file_exists($error_log_path)) {
-      foreach (file($error_log_path) as $line) {
-        if (preg_match('/\[.*?\] (.*?): (.*?) in (.*) on line (\d+)/', $line, $match)) {
-          // Parse PHP fatal errors for example: PHP Fatal error: Call to
-          // undefined function break_me() in /path/to/file.php on line 17
-          $this->insertLogEntry([
-            'test_class' => $test_class,
-            'status' => 'fail',
-            'message' => $match[2],
-            'message_group' => $match[1],
-            'line' => $match[4],
-            'file' => $match[3],
-          ]);
-        }
-        else {
-          // Unknown format, place the entire message in the log.
-          $this->insertLogEntry([
-            'test_class' => $test_class,
-            'status' => 'fail',
-            'message' => $line,
-            'message_group' => 'Fatal error',
-          ]);
-        }
-        $found = TRUE;
-      }
-    }
-    return $found;
-  }
-
 }

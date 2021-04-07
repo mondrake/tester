@@ -11,7 +11,7 @@ use Drupal\Core\Database\ConnectionNotDefinedException;
  *
  * @internal
  */
-class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface {
+class TestRunResultsStorage implements TestRunResultsStorageInterface {
 
   /**
    * The database connection to use for inserting assertions.
@@ -50,7 +50,7 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
   }
 
   /**
-   * SimpletestTestRunResultsStorage constructor.
+   * TestRunResultsStorage constructor.
    *
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection to use for inserting assertions.
@@ -89,12 +89,6 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
    */
   public function insertLogEntry(TestRun $test_run, array $entry): bool {
     $entry['test_id'] = $test_run->id();
-    $entry = array_merge([
-      'function' => 'Unknown',
-      'line' => 0,
-      'file' => 'Unknown',
-    ], $entry);
-
     return (bool) $this->connection->insert('simpletest')
       ->fields($entry)
       ->execute();
@@ -127,7 +121,7 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
       ->execute()
       ->fetchAll();
   }
-  
+
   public function xdump() {
     dump($this->connection->select('simpletest_test_id')
       ->fields('simpletest_test_id')
@@ -235,37 +229,12 @@ class SimpletestTestRunResultsStorage implements TestRunResultsStorageInterface 
           'default' => '',
           'description' => 'Message status. Core understands pass, fail, exception.',
         ],
-        'message' => [
-          'type' => 'text',
-          'not null' => TRUE,
-          'description' => 'The message itself.',
-        ],
         'message_group' => [
           'type' => 'varchar_ascii',
           'length' => 255,
           'not null' => TRUE,
           'default' => '',
           'description' => 'The message group this message belongs to. For example: warning, browser, user.',
-        ],
-        'function' => [
-          'type' => 'varchar_ascii',
-          'length' => 255,
-          'not null' => TRUE,
-          'default' => '',
-          'description' => 'Name of the assertion function or method that created this message.',
-        ],
-        'line' => [
-          'type' => 'int',
-          'not null' => TRUE,
-          'default' => 0,
-          'description' => 'Line number on which the function is called.',
-        ],
-        'file' => [
-          'type' => 'varchar',
-          'length' => 255,
-          'not null' => TRUE,
-          'default' => '',
-          'description' => 'Name of the file where the function is called.',
         ],
         'exit_code' => [
           'type' => 'int',
