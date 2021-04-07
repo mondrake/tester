@@ -159,6 +159,7 @@ function tester_test_run_results_storage() {
  * Implements callback_batch_operation().
  */
 function _tester_batch_operation($test_id, $test_list_init, &$context) {
+  $test_discovery = \Drupal::service('tester.test_discovery');
   $test_run_results_storage = tester_test_run_results_storage();
 
   // Get working values.
@@ -177,7 +178,7 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
 
   // Perform the next test.
   $test_class = array_shift($test_list);
-  $test_info = \Drupal::service('tester.test_discovery')->getTestClassInfo($test_class);
+  $test_info = $test_discovery->getTestClassInfo($test_class);
   $test_run = TestRun::get($test_run_results_storage, $test_id);
   $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
   $phpunit_results = $runner->execute($test_run, $test_info['filename'], $test_class);
@@ -198,7 +199,9 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     ];
     array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
   }
-  $context['message'] = t('Processed test @num of @max - %test.', ['%test' => $test_info['name'], '@num' => $max - $size, '@max' => $max]);
+  $next_test_class = array_key_first($test_list);
+  $next_test_info = $test_discovery->getTestClassInfo($next_test_class);
+  $context['message'] = t('Processing test @num of @max - %test.', ['%test' => $next_test_info['name'], '@num' => $max - $size + 1, '@max' => $max]);
   $overall_results = $test_results + [
     '#theme' => 'tester_result_summary',
     '#label' => t('Overall results:'),
