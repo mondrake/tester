@@ -7,7 +7,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\ConnectionNotDefinedException;
 
 /**
- * Implements a test run results storage compatible with legacy Simpletest.
+ * Implements a test run results storage compatible with Tester.
  *
  * @internal
  */
@@ -19,35 +19,6 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    * @var \Drupal\Core\Database\Connection
    */
   protected $connection;
-
-  /**
-   * Returns the database connection to use for inserting assertions.
-   *
-   * @return \Drupal\Core\Database\Connection
-   *   The database connection to use for inserting assertions.
-   */
-  public static function getConnection(): Connection {
-    // Check whether there is a test runner connection.
-    // @see run-tests.sh
-    // @todo Convert Simpletest UI runner to create + use this connection, too.
-    try {
-      $connection = Database::getConnection('default', 'test-runner');
-    }
-    catch (ConnectionNotDefinedException $e) {
-      // Check whether there is a backup of the original default connection.
-      // @see TestBase::prepareEnvironment()
-      try {
-        $connection = Database::getConnection('default', 'simpletest_original_default');
-      }
-      catch (ConnectionNotDefinedException $e) {
-        // If TestBase::prepareEnvironment() or TestBase::restoreEnvironment()
-        // failed, the test-specific database connection does not exist
-        // yet/anymore, so fall back to the default of the (UI) test runner.
-        $connection = Database::getConnection('default', 'default');
-      }
-    }
-    return $connection;
-  }
 
   /**
    * TestRunResultsStorage constructor.
@@ -66,7 +37,7 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    * {@inheritdoc}
    */
   public function createNew() {
-    return $this->connection->insert('simpletest_test_id')
+    return $this->connection->insert('tester_test_id')
       ->useDefaults(['test_id'])
       ->execute();
   }
@@ -75,7 +46,7 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    * {@inheritdoc}
    */
   public function setDatabasePrefix(TestRun $test_run, string $database_prefix): void {
-    $affected_rows = $this->connection->update('simpletest_test_id')
+    $affected_rows = $this->connection->update('tester_test_id')
       ->fields(['last_prefix' => $database_prefix])
       ->condition('test_id', $test_run->id())
       ->execute();
@@ -89,7 +60,7 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    */
   public function insertLogEntry(TestRun $test_run, array $entry): bool {
     $entry['test_id'] = $test_run->id();
-    return (bool) $this->connection->insert('simpletest')
+    return (bool) $this->connection->insert('tester_log')
       ->fields($entry)
       ->execute();
   }
@@ -99,10 +70,10 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    */
   public function removeResults(TestRun $test_run): int {
     $tx = $this->connection->startTransaction('delete_test_run');
-    $this->connection->delete('simpletest')
+    $this->connection->delete('tester_log')
       ->condition('test_id', $test_run->id())
       ->execute();
-    $count = $this->connection->delete('simpletest_test_id')
+    $count = $this->connection->delete('tester_test_id')
       ->condition('test_id', $test_run->id())
       ->execute();
     $tx = NULL;
@@ -113,8 +84,8 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    * {@inheritdoc}
    */
   public function getLogEntriesByTestClass(TestRun $test_run): array {
-    return $this->connection->select('simpletest')
-      ->fields('simpletest')
+    return $this->connection->select('tester_log')
+      ->fields('tester_log')
       ->condition('test_id', $test_run->id())
       ->orderBy('test_class')
       ->orderBy('message_id')
@@ -123,13 +94,13 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
   }
 
   public function xdump() {
-    dump($this->connection->select('simpletest_test_id')
-      ->fields('simpletest_test_id')
+    dump($this->connection->select('tester_test_id')
+      ->fields('tester_test_id')
       ->orderBy('test_id')
       ->execute()
       ->fetchAll());
-    dump($this->connection->select('simpletest')
-      ->fields('simpletest')
+    dump($this->connection->select('tester_log')
+      ->fields('tester_log')
       ->orderBy('message_id')
       ->execute()
       ->fetchAll());
@@ -143,15 +114,15 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
     // Define a subquery to identify the latest 'message_id' given the
     // $test_id.
     $max_message_id_subquery = $this->connection
-      ->select('simpletest', 'sub')
+      ->select('tester_log', 'sub')
       ->condition('test_id', $test_run->id());
     $max_message_id_subquery->addExpression('MAX([message_id])', 'max_message_id');
 
-    // Run a select query to return 'last_prefix' from {simpletest_test_id} and
-    // 'test_class' from {simpletest}.
+    // Run a select query to return 'last_prefix' from {tester_test_id} and
+    // 'test_class' from {tester_log}.
     $select = $this->connection->select($max_message_id_subquery, 'st_sub');
-    $select->join('simpletest', 'st', '[st].[message_id] = [st_sub].[max_message_id]');
-    $select->join('simpletest_test_id', 'sttid', '[st].[test_id] = [sttid].[test_id]');
+    $select->join('tester_log', 'st', '[st].[message_id] = [st_sub].[max_message_id]');
+    $select->join('tester_test_id', 'sttid', '[st].[test_id] = [sttid].[test_id]');
     $select->addField('sttid', 'last_prefix', 'db_prefix');
     $select->addField('st', 'test_class');
 
@@ -179,7 +150,7 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    */
   public function validateTestingResultsEnvironment(): bool {
     $schema = $this->connection->schema();
-    return $schema->tableExists('simpletest') && $schema->tableExists('simpletest_test_id');
+    return $schema->tableExists('tester_log') && $schema->tableExists('tester_test_id');
   }
 
   /**
@@ -187,27 +158,27 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
    */
   public function cleanUp(): int {
     // Clear test results.
-    $tx = $this->connection->startTransaction('delete_simpletest');
-    $this->connection->delete('simpletest')->execute();
-    $count = $this->connection->delete('simpletest_test_id')->execute();
+    $tx = $this->connection->startTransaction('delete_tester');
+    $this->connection->delete('tester_log')->execute();
+    $count = $this->connection->delete('tester_test_id')->execute();
     $tx = NULL;
     return $count;
   }
 
   /**
-   * Defines the database schema for run-tests.sh and simpletest module.
+   * Defines the database schema for Tester test run storage.
    *
    * @return array
    *   Array suitable for use in a hook_schema() implementation.
    */
   public static function testingResultsSchema(): array {
-    $schema['simpletest'] = [
-      'description' => 'Stores simpletest messages',
+    $schema['tester_log'] = [
+      'description' => 'Stores tester log',
       'fields' => [
         'message_id' => [
           'type' => 'serial',
           'not null' => TRUE,
-          'description' => 'Primary Key: Unique simpletest message ID.',
+          'description' => 'Primary Key: Unique log ID.',
         ],
         'test_id' => [
           'type' => 'int',
@@ -258,13 +229,13 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
         'reporter' => ['test_class', 'message_id'],
       ],
     ];
-    $schema['simpletest_test_id'] = [
-      'description' => 'Stores simpletest test IDs, used to auto-increment the test ID so that a fresh test ID is used.',
+    $schema['tester_test_id'] = [
+      'description' => 'Stores tester test IDs, used to auto-increment the test ID so that a fresh test ID is used.',
       'fields' => [
         'test_id' => [
           'type' => 'serial',
           'not null' => TRUE,
-          'description' => 'Primary Key: Unique simpletest ID used to group test results together. Each time a set of tests are run a new test ID is used.',
+          'description' => 'Unique test ID used to test results together. Each time a set of tests are run a new test ID is used.',
         ],
         'last_prefix' => [
           'type' => 'varchar',
