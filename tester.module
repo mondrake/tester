@@ -201,7 +201,13 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
   }
   $next_test_class = array_key_first($test_list);
   $next_test_info = $test_discovery->getTestClassInfo($next_test_class);
-  $context['message'] = t('Processing test @num of @max - %test.', ['%test' => $next_test_info['name'], '@num' => $max - $size + 1, '@max' => $max]);
+  $next_test_num = $max - $size + 1;
+  if ($next_test_num <= $max) {
+    $context['message'] = t('Processing test @num of @max - %test.', ['%test' => $next_test_info['name'], '@num' => , '@max' => $max]);
+  }
+  else {
+    $context['message'] = '';
+  }
   $overall_results = $test_results + [
     '#theme' => 'tester_result_summary',
     '#label' => t('Overall results:'),
