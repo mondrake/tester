@@ -287,7 +287,7 @@ class TesterTestForm extends FormBase {
         ['_tester_batch_operation', [$test_run->id(), $test_list]],
       ],
       'finished' => '_tester_batch_finished',
-      'progress_message' => '',
+      'progress_message' => 'bingobongo',
       'library' => ['tester/tester'],
       'init_message' => t('Processing test @num of @max - %test.', ['%test' => $test_info['name'], '@num' => '1', '@max' => count($test_list)]),
     ];
