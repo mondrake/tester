@@ -199,26 +199,27 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     ];
     array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
   }
+
   $next_test_class = array_key_first($test_list);
   $next_test_info = $test_discovery->getTestClassInfo($next_test_class);
   $next_test_num = $max - $size + 1;
   if ($next_test_num <= $max) {
     $context['message'] = t('Processing test @num of @max - %test.', ['%test' => $next_test_info['name'], '@num' => $next_test_num, '@max' => $max]);
+    $overall_results = $test_results + [
+      '#theme' => 'tester_result_summary',
+      '#label' => t('Overall results:'),
+    ];
+    $context['message'] .= \Drupal::service('renderer')->render($overall_results);
+
+    $item_list = [
+      '#theme' => 'item_list',
+      '#items' => $items,
+    ];
+    $context['message'] .= \Drupal::service('renderer')->render($item_list);
   }
   else {
-    $context['message'] = '';
+    $context['message'] = t('Preparing report...');
   }
-  $overall_results = $test_results + [
-    '#theme' => 'tester_result_summary',
-    '#label' => t('Overall results:'),
-  ];
-  $context['message'] .= \Drupal::service('renderer')->render($overall_results);
-
-  $item_list = [
-    '#theme' => 'item_list',
-    '#items' => $items,
-  ];
-  $context['message'] .= \Drupal::service('renderer')->render($item_list);
 
   // Save working values for the next iteration.
   $context['sandbox']['tests'] = $test_list;
