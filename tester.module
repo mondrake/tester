@@ -120,20 +120,6 @@ function _tester_build_summary_line($summary) {
 }
 
 /**
- * Formats test result summaries into a comma separated string for run-tests.sh.
- *
- * @param array $summary
- *   A summary of the test results.
- *
- * @return string
- *   A concatenated string of the formatted test results.
- */
-function _tester_format_summary_line($summary) {
-  $parts = _tester_build_summary_line($summary);
-  return implode(', ', $parts);
-}
-
-/**
  * @todo
  */
 function tester_test_run_results_storage() {

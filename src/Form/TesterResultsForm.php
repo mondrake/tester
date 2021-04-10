@@ -168,9 +168,8 @@ class TesterResultsForm extends FormBase {
       '#weight' => -11,
     ];
 
-dump($filter);
-    $pass_count = count($filter['pass']) + count($filter['warn']) + count($filter['debug']);
-    $fail_count = count($filter['fail']) + count($filter['error']) + count($filter['fatal']);
+    $pass_count = count($filter['pass']);
+    $fail_count = count($filter['fail']);
     $form['action']['filter'] = [
       '#type' => 'select',
       '#title' => 'Filter',
