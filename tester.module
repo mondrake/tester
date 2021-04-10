@@ -202,7 +202,7 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     }
   }
   $test_results[$test_class]['#name'] = $test_info['name'];
-dump($test_results);
+//dump($test_results);
 
   $items = [];
   foreach (Element::children($test_results) as $class) {
