@@ -194,7 +194,12 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
 
   // Gather results and compose the report.
   foreach ($test_results[$test_class] as $key => $value) {
-    $test_results[$key] += $value;
+    if ($key !== '#result') {
+      $test_results[$key] += $value;
+    }
+    else {
+      $test_results[$key] = $value;      
+    }
   }
   $test_results[$test_class]['#name'] = $test_info['name'];
   $items = [];
