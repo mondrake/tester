@@ -53,7 +53,16 @@ function tester_help($route_name, RouteMatchInterface $route_match) {
 function tester_theme() {
   return [
     'tester_result_summary' => [
-      'variables' => ['label' => NULL, 'items' => [], 'pass' => 0, 'fail' => 0, 'exception' => 0, 'debug' => 0],
+      'variables' => [
+        'label' => NULL,
+        'items' => [],
+        'pass' => 0,
+        'warn' => 0,
+        'fail' => 0,
+        'error' => 0,
+        'fatal' => 0,
+        'debug' => 0
+      ],
     ],
   ];
 }
@@ -100,8 +109,10 @@ function template_preprocess_tester_result_summary(&$variables) {
 function _tester_build_summary_line($summary) {
   $translation = \Drupal::translation();
   $items['pass'] = $translation->formatPlural($summary['pass'], '1 pass', '@count passes');
+  $items['warn'] = $translation->formatPlural($summary['warn'], '1 warning', '@count warnings');
   $items['fail'] = $translation->formatPlural($summary['fail'], '1 fail', '@count fails');
-  $items['exception'] = $translation->formatPlural($summary['exception'], '1 exception', '@count exceptions');
+  $items['error'] = $translation->formatPlural($summary['error'], '1 error', '@count errors');
+  $items['fatal'] = $translation->formatPlural($summary['fatal'], '1 fatal', '@count fatals');
   if ($summary['debug']) {
     $items['debug'] = $translation->formatPlural($summary['debug'], '1 debug message', '@count debug messages');
   }
@@ -167,7 +178,14 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     // First iteration: initialize working values.
     $test_list = $test_list_init;
     $context['sandbox']['max'] = count($test_list);
-    $test_results = ['#pass' => 0, '#fail' => 0, '#exception' => 0, '#debug' => 0];
+    $test_results = [
+      '#pass' => 0,
+      '#warn' => 0,
+      '#fail' => 0,
+      '#error' => 0,
+      '#fatal' => 0,
+      '#debug' => 0,
+    ];
   }
   else {
     // Nth iteration: get the current values where we last stored them.

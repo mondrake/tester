@@ -134,7 +134,7 @@ class ExecManager {
     }
     $execution_time = Timer::stop('tester:runOsShell')['time'];
 
-    return $return_code < 0 ? 255 : $return_code;
+    return $return_code;
   }
 
   /**

@@ -8,8 +8,10 @@
  * - items: Pluralized summaries for each result type (number of passes, fails,
  *   exceptions, and debug messages).
  * - pass: The number of passes.
+ * - warn: The number of warnings.
  * - fail: The number of fails.
- * - exception: The number of exceptions.
+ * - error: The number of errors.
+ * - fatal: The number of fatals.
  * - debug: The number of debug messages.
  *
  * @see template_preprocess_tester_result_summary()
@@ -17,6 +19,6 @@
  * @ingroup themeable
  */
 #}
-<div class="tester-{{ fail + exception == 0 ? 'pass' : 'fail' }}">
+<div class="tester-{{ fail + error + fatal == 0 ? 'pass' : 'fail' }}">
   {{ label }} {{ items|join(', ') }}
 </div>
