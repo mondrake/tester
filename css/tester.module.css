@@ -53,26 +53,25 @@ tr.tester-pass.odd {
 tr.tester-pass.even {
   background-color: #9bff9b;
 }
-tr.tester-fail,
-tr.tester-fail.odd {
-  background-color: #ffc9c9;
-}
-tr.tester-fail.even {
-  background-color: #ffacac;
-}
-tr.tester-error,
-tr.tester-error.odd {
+tr.tester-warn,
+tr.tester-warn.odd {
   background-color: #f4ea71;
 }
-tr.tester-error.even {
+tr.tester-warn.even {
   background-color: #f5e742;
 }
+tr.tester-fail,
+tr.tester-fail.odd,
+tr.tester-error,
+tr.tester-error.odd,
 tr.tester-fatal,
 tr.tester-fatal.odd {
-  background-color: #f4ea71;
+  background-color: #ffc9c9;
 }
+tr.tester-fail.even,
+tr.tester-error.even,
 tr.tester-fatal.even {
-  background-color: #f5e742;
+  background-color: #ffacac;
 }
 tr.tester-debug,
 tr.tester-debug.odd {
