@@ -196,6 +196,7 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
   }
   $test_results[$test_class]['#name'] = $test_info['name'];
   $items = [];
+dump($test_results);
   foreach (Element::children($test_results) as $class) {
     $class_test_result = $test_results[$class] + [
       '#theme' => 'tester_result_summary',
