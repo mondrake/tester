@@ -290,6 +290,7 @@ dump($filter);
    * @see run-tests.sh
    */
   public static function addResultForm(array &$form, array $results) {
+dump($results);
     // Transform the test results to be grouped by test class.
     $test_results = [];
     foreach ($results as $result) {
@@ -298,6 +299,7 @@ dump($filter);
       }
       $test_results[$result->test_class][] = $result;
     }
+dump('test_results', $test_results);
 
     $image_status_map = static::buildStatusImageMap();
 
@@ -318,8 +320,10 @@ dump($filter);
     $form['result']['summary'] = $summary = [
       '#theme' => 'tester_result_summary',
       '#pass' => 0,
+      '#warn' => 0,
       '#fail' => 0,
-      '#exception' => 0,
+      '#error' => 0,
+      '#fatal' => 0,
       '#debug' => 0,
     ];
 
