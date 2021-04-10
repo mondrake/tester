@@ -202,10 +202,10 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
 //      '#theme' => 'tester_result_summary',
 //      '#label' => t($test_results[$class]['#name'] . ':'),
 //    ];
-dump($phpunit_results, $test_results[$class]);
+//dump($phpunit_results, $test_results[$class]);
     $class_test_result = t('@class: @result', [
       '@class' => $test_results[$class]['#name'],
-      '@result' => $phpunit_results->status,
+      '@result' => $phpunit_results[0]->status,
     ]);
 //    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
     array_unshift($items, $class_test_result);
