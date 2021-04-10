@@ -204,7 +204,8 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
 //      '#label' => t($test_results[$class]['#name'] . ':'),
 //    ];
     $class_test_result = t('Pass');
-    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
+//    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
+    array_unshift($items, $class_test_result);
   }
 
   $next_test_class = array_key_first($test_list);
