@@ -22,9 +22,12 @@
 #}
 <div class="tester-{{ fail + error + fatal == 0 ? 'pass' : 'fail' }}">
   {{ label }}
+/**
   {% if result %}
     {{ result }}
   {% else %}
     {{ items|join(', ') }}
   {% endif %}
+  */
+  {{ result }}
 </div>
