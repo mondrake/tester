@@ -197,9 +197,6 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     if ($key !== '#result') {
       $test_results[$key] += $value;
     }
-    else {
-      $test_results[$key] = $value;
-    }
   }
   $test_results[$test_class]['#name'] = $test_info['name'];
 //dump($test_results);
