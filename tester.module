@@ -203,7 +203,7 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     $class_test_result = $test_results[$class] + [
       '#theme' => 'tester_result_summary',
       '#label' => t($test_results[$class]['#name'] . ':'),
-      '#result' => $phpunit_results[0]['status'],
+      '#result' => $test_results[$class]['#result'],
     ];
 //dump($phpunit_results, $test_results[$class]);
 //    $class_test_result = t('@class: @result', [
