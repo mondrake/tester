@@ -5,7 +5,6 @@ namespace Drupal\tester;
 use Drupal\Core\Database\Database;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Tests\Listeners\SimpletestUiPrinter;
-use Drupal\Core\Test\TestStatus;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -205,13 +204,39 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
       [
         'test_id' => $test_run->id(),
         'test_class' => $classname,
-        'status' => TestStatus::label($command_ret),
+        'status' => $this->label($command_ret),
         'message_group' => 'PHPUnit',
         'exit_code' => $command_ret,
         'process_output' => $output,
         'process_error' => $error,
       ],
     ];
+  }
+
+  /**
+   * Turns a status code into a human-readable string.
+   *
+   * @param int $status
+   *   A test runner return code.
+   *
+   * @return string
+   *   The human-readable version of the status code.
+   */
+  protected function label($status) {
+    switch ($status) {
+      case 0:
+        return 'pass';
+
+      case 1:
+        return 'fail';
+
+      case 2:
+        return 'error';
+
+      default:
+        return 'fatal';
+
+    }
   }
 
   /**
@@ -249,7 +274,9 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
         $summaries[$result['test_class']] = [
           '#pass' => 0,
           '#fail' => 0,
-          '#exception' => 0,
+          '#warn' => 0,
+          '#error' => 0,
+          '#fatal' => 0,
           '#debug' => 0,
         ];
       }
@@ -259,12 +286,20 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
           $summaries[$result['test_class']]['#pass']++;
           break;
 
+        case 'warn':
+          $summaries[$result['test_class']]['#warn']++;
+          break;
+
         case 'fail':
           $summaries[$result['test_class']]['#fail']++;
           break;
 
-        case 'exception':
-          $summaries[$result['test_class']]['#exception']++;
+        case 'error':
+          $summaries[$result['test_class']]['#error']++;
+          break;
+
+        case 'fatal':
+          $summaries[$result['test_class']]['#fatal']++;
           break;
 
         case 'debug':

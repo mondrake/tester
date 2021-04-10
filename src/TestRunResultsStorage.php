@@ -198,7 +198,7 @@ class TestRunResultsStorage implements TestRunResultsStorageInterface {
           'length' => 9,
           'not null' => TRUE,
           'default' => '',
-          'description' => 'Message status. Core understands pass, fail, exception.',
+          'description' => 'Test status.',
         ],
         'message_group' => [
           'type' => 'varchar_ascii',

@@ -89,6 +89,13 @@ class TesterResultsForm extends FormBase {
       '#height' => 18,
       '#alt' => 'Pass',
     ];
+    $image_warn = [
+      '#theme' => 'image',
+      '#uri' => 'core/misc/icons/e29700/warning.svg',
+      '#width' => 18,
+      '#height' => 18,
+      '#alt' => 'Warning',
+    ];
     $image_fail = [
       '#theme' => 'image',
       '#uri' => 'core/misc/icons/e32700/error.svg',
@@ -96,25 +103,33 @@ class TesterResultsForm extends FormBase {
       '#height' => 18,
       '#alt' => 'Fail',
     ];
-    $image_exception = [
+    $image_error = [
       '#theme' => 'image',
-      '#uri' => 'core/misc/icons/e29700/warning.svg',
+      '#uri' => 'core/misc/icons/e32700/error.svg',
       '#width' => 18,
       '#height' => 18,
-      '#alt' => 'Exception',
+      '#alt' => 'Error',
+    ];
+    $image_fatal = [
+      '#theme' => 'image',
+      '#uri' => 'core/misc/icons/e32700/error.svg',
+      '#width' => 18,
+      '#height' => 18,
+      '#alt' => 'Fatal',
     ];
     $image_debug = [
       '#theme' => 'image',
-      '#uri' => 'core/misc/icons/e29700/warning.svg',
+      '#uri' => 'core/misc/icons/bebebe/pencil.svg',
       '#width' => 18,
       '#height' => 18,
       '#alt' => 'Debug',
     ];
     return [
       'pass' => $image_pass,
-      'fail' => $image_fail,
-      'error' => $image_exception,
-      'exception' => $image_exception,
+      'warn' => $image_warn,
+      'fail' => $image_file,
+      'error' => $image_error,
+      'fatal' => $image_fatal,
       'debug' => $image_debug,
     ];
   }
@@ -157,9 +172,15 @@ class TesterResultsForm extends FormBase {
       '#type' => 'select',
       '#title' => 'Filter',
       '#options' => [
-        'all' => $this->t('All (@count)', ['@count' => count($filter['pass']) + count($filter['fail'])]),
-        'pass' => $this->t('Pass (@count)', ['@count' => count($filter['pass'])]),
-        'fail' => $this->t('Fail (@count)', ['@count' => count($filter['fail'])]),
+        'all' => $this->t('All (@count)', [
+          '@count' => count($filter['pass']) + count($filter['warn']) + count($filter['fail']) + count($filter['error']) + count($filter['fatal']) + count($filter['debug']),
+        ]),
+        'pass' => $this->t('Pass (@count)', [
+          '@count' => count($filter['pass']) + count($filter['warn']) + count($filter['debug']),
+        ]),
+        'fail' => $this->t('Fail (@count)', [
+          '@count' => count($filter['fail']) + count($filter['error']) + count($filter['fatal']),
+        ]),
       ],
     ];
     $form['action']['filter']['#default_value'] = ($filter['fail'] ? 'fail' : 'all');
@@ -167,11 +188,11 @@ class TesterResultsForm extends FormBase {
     // Categorized test classes for to be used with selected filter value.
     $form['action']['filter_pass'] = [
       '#type' => 'hidden',
-      '#default_value' => implode(',', $filter['pass']),
+      '#default_value' => implode(',', array_merge($filter['pass'], $filter['warn'], $filter['debug'])),
     ];
     $form['action']['filter_fail'] = [
       '#type' => 'hidden',
-      '#default_value' => implode(',', $filter['fail']),
+      '#default_value' => implode(',', array_merge($filter['fail'], $filter['error'], $filter['fatal'])),
     ];
 
     $form['action']['op'] = [
@@ -323,7 +344,7 @@ class TesterResultsForm extends FormBase {
       foreach ($assertions as $assertion) {
         $row = [];
         $row[] = ['data' => $image_status_map[$assertion->status]];
-        $message = $assertion->exit_code < 3 ? $assertion->process_output : $assertion->process_error;
+        $message = ($assertion->exit_code >= 0 && $assertion->exit_code < 3) ? $assertion->process_output : $assertion->process_error;
         $row[] = ['data' => ['#markup' => '<pre>' . $message . '</pre>']];
 
         $class = 'tester-' . $assertion->status;

@@ -60,11 +60,18 @@ tr.tester-fail.odd {
 tr.tester-fail.even {
   background-color: #ffacac;
 }
-tr.tester-exception,
-tr.tester-exception.odd {
+tr.tester-error,
+tr.tester-error.odd {
   background-color: #f4ea71;
 }
-tr.tester-exception.even {
+tr.tester-error.even {
+  background-color: #f5e742;
+}
+tr.tester-fatal,
+tr.tester-fatal.odd {
+  background-color: #f4ea71;
+}
+tr.tester-fatal.even {
   background-color: #f5e742;
 }
 tr.tester-debug,
