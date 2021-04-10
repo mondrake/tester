@@ -269,9 +269,11 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
    */
   public function summarizeResults(array $results): array {
     $summaries = [];
+
     foreach ($results as $result) {
       if (!isset($summaries[$result['test_class']])) {
         $summaries[$result['test_class']] = [
+          '#result' => $result['status'],
           '#pass' => 0,
           '#fail' => 0,
           '#warn' => 0,
@@ -306,6 +308,7 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
           $summaries[$result['test_class']]['#debug']++;
           break;
       }
+
     }
     return $summaries;
   }
