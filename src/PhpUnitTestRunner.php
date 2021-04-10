@@ -214,7 +214,7 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
   }
 
   /**
-   * Turns a status code into a human-readable string.
+   * Turns a status code into a label string.
    *
    * @param int $status
    *   A test runner return code.
@@ -272,8 +272,31 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
 
     foreach ($results as $result) {
       if (!isset($summaries[$result['test_class']])) {
+        switch ($result['status']) {
+          case 'pass':
+            $result_description = t('OK');
+            break;
+
+          case 'fail':
+            $result_description = t('Failures!');
+            break;
+
+          case 'error':
+            $result_description = t('Errors!');
+            break;
+
+          case 'fatal':
+            $result_description = t('Test fatal error, exit code: @code', ['@code' => $result['exit_code']]);
+            break;
+
+          default:
+            $result_description = t('Unknown result status');
+            break;
+        }
+
+
         $summaries[$result['test_class']] = [
-          '#result' => $result['status'],
+          '#result' => $result_description,
           '#pass' => 0,
           '#fail' => 0,
           '#warn' => 0,
