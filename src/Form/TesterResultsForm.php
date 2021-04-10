@@ -127,7 +127,7 @@ class TesterResultsForm extends FormBase {
     return [
       'pass' => $image_pass,
       'warn' => $image_warn,
-      'fail' => $image_file,
+      'fail' => $image_fail,
       'error' => $image_error,
       'fatal' => $image_fatal,
       'debug' => $image_debug,
