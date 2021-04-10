@@ -186,7 +186,7 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
   $test_run = TestRun::get($test_run_results_storage, $test_id);
   $runner = PhpUnitTestRunner::create(\Drupal::getContainer());
   $phpunit_results = $runner->execute($test_run, $test_info['filename'], $test_class);
-dump($phpunit_results);
+//dump($phpunit_results);
   $runner->processPhpUnitResults($test_run, $phpunit_results);
   $test_results[$test_class] = $runner->summarizeResults($phpunit_results)[$test_class];
   $size = count($test_list);
@@ -197,12 +197,13 @@ dump($phpunit_results);
   }
   $test_results[$test_class]['#name'] = $test_info['name'];
   $items = [];
-dump($test_results);
+//dump($test_results);
   foreach (Element::children($test_results) as $class) {
-    $class_test_result = $test_results[$class] + [
-      '#theme' => 'tester_result_summary',
-      '#label' => t($test_results[$class]['#name'] . ':'),
-    ];
+//    $class_test_result = $test_results[$class] + [
+//      '#theme' => 'tester_result_summary',
+//      '#label' => t($test_results[$class]['#name'] . ':'),
+//    ];
+    $class_test_result = t($phpunit_results->status);
     array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
   }
 
