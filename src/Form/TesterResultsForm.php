@@ -290,7 +290,6 @@ dump($filter);
    * @see run-tests.sh
    */
   public static function addResultForm(array &$form, array $results) {
-dump($results);
     // Transform the test results to be grouped by test class.
     $test_results = [];
     foreach ($results as $result) {
@@ -299,7 +298,6 @@ dump($results);
       }
       $test_results[$result->test_class][] = $result;
     }
-dump('test_results', $test_results);
 
     $image_status_map = static::buildStatusImageMap();
 
@@ -370,7 +368,7 @@ dump('test_results', $test_results);
       ];
 
       // Set summary information.
-      $group_summary['#ok'] = $group_summary['#fail'] + $group_summary['#exception'] == 0;
+      $group_summary['#ok'] = $group_summary['#fail'] + $group_summary['#error'] + $group_summary['#fatal'] == 0;
       $form['result']['results'][$group]['#open'] = !$group_summary['#ok'];
 
       // Store test group (class) as for use in filter.
@@ -378,7 +376,7 @@ dump('test_results', $test_results);
     }
 
     // Overall summary status.
-    $form['result']['summary']['#ok'] = $form['result']['summary']['#fail'] + $form['result']['summary']['#exception'] == 0;
+    $form['result']['summary']['#ok'] = $form['result']['summary']['#fail'] + $form['result']['summary']['#error'] + $form['result']['summary']['#fatal'] == 0;
 
     return $filter;
   }
