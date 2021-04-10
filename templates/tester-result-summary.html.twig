@@ -5,6 +5,7 @@
  *
  * Available variables:
  * - label: An optional label to be rendered before the results.
+ * - result: An optional results message.
  * - items: Pluralized summaries for each result type (number of passes, fails,
  *   exceptions, and debug messages).
  * - pass: The number of passes.
@@ -20,5 +21,10 @@
  */
 #}
 <div class="tester-{{ fail + error + fatal == 0 ? 'pass' : 'fail' }}">
-  {{ label }} {{ items|join(', ') }}
+  {{ label }}
+  {% if result %}
+    {{ result }}
+  {% else %}
+    {{ items|join(', ') }}
+  {% endif %}
 </div>
