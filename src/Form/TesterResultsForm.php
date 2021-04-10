@@ -190,11 +190,11 @@ class TesterResultsForm extends FormBase {
     // Categorized test classes for to be used with selected filter value.
     $form['action']['filter_pass'] = [
       '#type' => 'hidden',
-      '#default_value' => implode(',', array_merge($filter['pass'], $filter['warn'], $filter['debug'])),
+      '#default_value' => implode(',', $filter['pass']),
     ];
     $form['action']['filter_fail'] = [
       '#type' => 'hidden',
-      '#default_value' => implode(',', array_merge($filter['fail'], $filter['error'], $filter['fatal'])),
+      '#default_value' => implode(',', $filter['fail']),
     ];
 
     $form['action']['op'] = [
