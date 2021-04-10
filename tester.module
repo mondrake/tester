@@ -55,6 +55,7 @@ function tester_theme() {
     'tester_result_summary' => [
       'variables' => [
         'label' => NULL,
+        'result' => NULL,
         'items' => [],
         'pass' => 0,
         'warn' => 0,
@@ -116,6 +117,7 @@ function _tester_build_summary_line($summary) {
   if ($summary['debug']) {
     $items['debug'] = $translation->formatPlural($summary['debug'], '1 debug message', '@count debug messages');
   }
+  $items['result'] = $summary['result'];
   return $items;
 }
 
@@ -198,17 +200,18 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
   $items = [];
 //dump($test_results);
   foreach (Element::children($test_results) as $class) {
-//    $class_test_result = $test_results[$class] + [
-//      '#theme' => 'tester_result_summary',
-//      '#label' => t($test_results[$class]['#name'] . ':'),
-//    ];
+    $class_test_result = $test_results[$class] + [
+      '#theme' => 'tester_result_summary',
+      '#label' => t($test_results[$class]['#name'] . ':'),
+      '#result' => $phpunit_results[0]['status'],
+    ];
 //dump($phpunit_results, $test_results[$class]);
-    $class_test_result = t('@class: @result', [
-      '@class' => $test_results[$class]['#name'],
-      '@result' => $phpunit_results[0]['status'],
-    ]);
-//    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
-    array_unshift($items, $class_test_result);
+//    $class_test_result = t('@class: @result', [
+//      '@class' => $test_results[$class]['#name'],
+//      '@result' => $phpunit_results[0]['status'],
+//    ]);
+    array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
+//    array_unshift($items, $class_test_result);
   }
 
   $next_test_class = array_key_first($test_list);
