@@ -168,18 +168,21 @@ class TesterResultsForm extends FormBase {
       '#weight' => -11,
     ];
 
+dump($filter);
+    $pass_count = count($filter['pass']) + count($filter['warn']) + count($filter['debug']);
+    $fail_count = count($filter['fail']) + count($filter['error']) + count($filter['fatal']);
     $form['action']['filter'] = [
       '#type' => 'select',
       '#title' => 'Filter',
       '#options' => [
         'all' => $this->t('All (@count)', [
-          '@count' => count($filter['pass']) + count($filter['warn']) + count($filter['fail']) + count($filter['error']) + count($filter['fatal']) + count($filter['debug']),
+          '@count' => $pass_count + $fail_count,
         ]),
         'pass' => $this->t('Pass (@count)', [
-          '@count' => count($filter['pass']) + count($filter['warn']) + count($filter['debug']),
+          '@count' => $pass_count,
         ]),
         'fail' => $this->t('Fail (@count)', [
-          '@count' => count($filter['fail']) + count($filter['error']) + count($filter['fatal']),
+          '@count' => $fail_count,
         ]),
       ],
     ];
