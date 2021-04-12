@@ -286,7 +286,7 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
             break;
 
           case 'fatal':
-            $result_description = t('Test fatal error, exit code: @code', ['@code' => $result['exit_code']]);
+            $result_description = t('FATAL test process error (exit code: @code)', ['@code' => $result['exit_code']]);
             break;
 
           default:
