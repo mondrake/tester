@@ -117,7 +117,9 @@ function _tester_build_summary_line($summary) {
   if ($summary['debug']) {
     $items['debug'] = $translation->formatPlural($summary['debug'], '1 debug message', '@count debug messages');
   }
-  $items['result'] = $summary['result'];
+  if ($summary['result']) {
+    $items['result'] = $summary['result'];
+  }
   return $items;
 }
 
@@ -219,7 +221,7 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
       '#theme' => 'tester_result_summary',
       '#label' => t('Overall results:'),
     ];
-dump($test_results, $overall_results);
+//dump($test_results, $overall_results);
     $context['message'] .= \Drupal::service('renderer')->render($overall_results);
 
     $item_list = [
