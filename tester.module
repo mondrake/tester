@@ -199,7 +199,6 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
     }
   }
   $test_results[$test_class]['#name'] = $test_info['name'];
-//dump($test_results);
 
   $items = [];
   foreach (Element::children($test_results) as $class) {
@@ -208,15 +207,8 @@ function _tester_batch_operation($test_id, $test_list_init, &$context) {
       '#label' => t($test_results[$class]['#name'] . ':'),
       '#result' => $test_results[$class]['#result'],
     ];
-//dump($phpunit_results, $test_results[$class]);
-//    $class_test_result = t('@class: @result', [
-//      '@class' => $test_results[$class]['#name'],
-//      '@result' => $phpunit_results[0]['status'],
-//    ]);
     array_unshift($items, \Drupal::service('renderer')->render($class_test_result));
-//    array_unshift($items, $class_test_result);
   }
-dump($items);
 
   $next_test_class = array_key_first($test_list);
   $next_test_info = $test_discovery->getTestClassInfo($next_test_class);
@@ -227,6 +219,7 @@ dump($items);
       '#theme' => 'tester_result_summary',
       '#label' => t('Overall results:'),
     ];
+dump($test_results, $overall_results);
     $context['message'] .= \Drupal::service('renderer')->render($overall_results);
 
     $item_list = [
