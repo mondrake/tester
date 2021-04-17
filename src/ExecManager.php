@@ -37,7 +37,7 @@ class ExecManager {
    *
    * @var int
    */
-  protected $timeout = 60;
+  protected $timeout = 300;
 
   /**
    * The current user.
