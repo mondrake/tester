@@ -117,6 +117,7 @@ class ExecManager {
     $process_environment_variables = [
       'SIMPLETEST_DB' => Database::getConnectionInfoAsUrl(),
       'SIMPLETEST_BASE_URL' => "http://192.168.1.2/d91",
+      'SYMFONY_DEPRECATIONS_HELPER' => 'disabled',
     ];
 
     Timer::start('tester:runOsShell');
