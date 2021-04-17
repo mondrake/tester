@@ -118,7 +118,7 @@ class ExecManager {
       'SIMPLETEST_DB' => Database::getConnectionInfoAsUrl(),
       'SIMPLETEST_BASE_URL' => "http://192.168.1.2/d91",
       'SYMFONY_DEPRECATIONS_HELPER' => 'disabled',
-      'DBAL_URL' => "sqlite://var/www/d91/sites/default/files/sqlite-drudbal",
+      'DBAL_URL' => "sqlite:///var/www/d91/sites/default/files/sqlite-drudbal",
     ];
 
     Timer::start('tester:runOsShell');
