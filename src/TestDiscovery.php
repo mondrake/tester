@@ -132,6 +132,10 @@ class TestDiscovery extends CoreTestDiscovery {
       'sites/tester/list-tests.xml',
     ], $output, $error);
 
+    if ($list_command_ret !== 0) {
+      throw new \RuntimeException("Error discovering tests: $error");
+    }
+
     // Load the output XML for processing.
     $contents = @file_get_contents('sites/tester/list-tests.xml');
     if (!$contents) {
