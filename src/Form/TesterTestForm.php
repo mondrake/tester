@@ -80,7 +80,7 @@ class TesterTestForm extends FormBase {
     $form['clean']['op'] = [
       '#type' => 'submit',
       '#value' => $this->t('Clean environment'),
-      '#submit' => ['tester_clean_environment'],
+      '#submit' => [[$this, 'cleanEnvironment']],
     ];
 
     // Do not needlessly re-execute a full test discovery if the user input
@@ -266,7 +266,7 @@ class TesterTestForm extends FormBase {
    * @return int
    *   The test ID.
    */
-  function runTests(array $test_list): int {
+  public function runTests(array $test_list): int {
 
     $test_run_results_storage = tester_test_run_results_storage();
     $test_class = reset($test_list);
@@ -287,6 +287,7 @@ class TesterTestForm extends FormBase {
         ['_tester_batch_operation', [$test_run->id(), $test_list]],
       ],
       'finished' => '_tester_batch_finished',
+      'progress_message' => t('Processing test @num of @max - %test.', ['%test' => $test_info['name'], '@num' => '1', '@max' => count($test_list)]),
 //      'progress_message' => 'bingobongo',
       'library' => ['tester/tester'],
 //      'init_message' => t('Processing test @num of @max - %test.', ['%test' => $test_info['name'], '@num' => '1', '@max' => count($test_list)]),
@@ -294,6 +295,13 @@ class TesterTestForm extends FormBase {
     batch_set($batch);
 
     return $test_run->id();
+  }
+
+  /**
+   * Removes all temporary database tables and directories.
+   */
+  public function cleanEnvironment(): void {
+    \Drupal::service('tester.environment_cleaner')->cleanEnvironment();
   }
 
 }
