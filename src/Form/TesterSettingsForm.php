@@ -71,14 +71,11 @@ class TesterSettingsForm extends ConfigFormBase {
     $config = $this->config('tester.settings');
 
     try {
-      // Check that the format map contains valid YAML.
       $config_yaml = Yaml::decode($form_state->getValue('config_yaml'));
-dump($config_yaml);die();
     }
     catch (InvalidDataTypeException $e) {
-dump($e->getMessage());die();
       // Invalid YAML detected, show details.
-      $form_state->setErrorByName('runner_options][config_yaml', $this->t("YAML syntax error: @error", ['@error' => $e->getMessage()]));
+      $form_state->setErrorByName('config_yaml', $this->t("YAML syntax error: @error", ['@error' => $e->getMessage()]));
     }
 
     parent::validateForm($form, $form_state);
