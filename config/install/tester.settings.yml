@@ -1,4 +1,3 @@
 clear_results: true
-verbose: true
 phpunit:
   config_yaml: bingobongo

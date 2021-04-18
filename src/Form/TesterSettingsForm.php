@@ -42,12 +42,6 @@ class TesterSettingsForm extends ConfigFormBase {
       '#description' => $this->t('By default Tester will clear the results after they have been viewed on the results page, but in some cases it may be useful to leave the results in the database. The results can then be viewed at <em>admin/config/development/testing/results/[test_id]</em>. The test ID can be found in the database, tester table, or kept track of when viewing the results the first time. Additionally, some modules may provide more analysis or features that require this setting to be disabled.'),
       '#default_value' => $config->get('clear_results'),
     ];
-    $form['general']['tester_verbose'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Provide verbose information when running tests'),
-      '#description' => $this->t('The verbose data will be printed along with the standard assertions and is useful for debugging. The verbose data will be erased between each test suite run. The verbose data output is very detailed and should only be used when debugging.'),
-      '#default_value' => $config->get('verbose'),
-    ];
 
     $form['runner_options'] = [
       '#type' => 'details',
@@ -60,7 +54,7 @@ class TesterSettingsForm extends ConfigFormBase {
       '#rows' => 15,
       '#title' => $this->t('PHPUnit'),
       '#description' => $this->t("Edit the map below to configure the PHPUnit CLI runner environment."),
-      '#default_value' => 'boing',
+      '#default_value' => $config->get('phpunit.config_yaml'),
 //      '#default_value' => Yaml::encode($config->get('image_formats')),
     ];
 
@@ -81,7 +75,6 @@ class TesterSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('tester.settings')
       ->set('clear_results', $form_state->getValue('tester_clear_results'))
-      ->set('verbose', $form_state->getValue('tester_verbose'))
       ->set('phpunit.config_yaml', $form_state->getValue('config_yaml'))
       ->save();
 
