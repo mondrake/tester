@@ -4,6 +4,7 @@
     "description": "A module to run PHPUnit tests in Drupal.",
     "require": {
         "php": ">=7.3",
-        "drupal/core": "^9.1"
+        "drupal/core": "^9.1",
+        "drupal/yaml_editor": "^1"
     }
 }

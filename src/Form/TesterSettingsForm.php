@@ -52,6 +52,7 @@ class TesterSettingsForm extends ConfigFormBase {
     $form['runner_options']['config_yaml'] = [
       '#type' => 'textarea',
       '#rows' => 15,
+      '#attributes' => ['data-yaml-editor' => 'true'],
       '#title' => $this->t('PHPUnit'),
       '#description' => $this->t("Edit the map below to configure the PHPUnit CLI runner environment."),
       '#default_value' => $config->get('phpunit.config_yaml'),
