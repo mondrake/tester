@@ -2,6 +2,8 @@
 
 namespace Drupal\tester\Form;
 
+use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -67,6 +69,16 @@ class TesterSettingsForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('tester.settings');
+
+    try {
+      // Check that the format map contains valid YAML.
+      $config_yaml = Yaml::decode($form_state->getValue('config_yaml'));
+    }
+    catch (InvalidDataTypeException $e) {
+      // Invalid YAML detected, show details.
+      $form_state->setErrorByName('runner_options][config_yaml', $this->t("YAML syntax error: @error", ['@error' => $e->getMessage()]));
+    }
+
     parent::validateForm($form, $form_state);
   }
 
