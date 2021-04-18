@@ -55,7 +55,7 @@ class TesterSettingsForm extends ConfigFormBase {
       '#collapsible' => TRUE,
       '#open' => TRUE,
     ];
-    $form['runner_options']['textbox'] = [
+    $form['runner_options']['config_yaml'] = [
       '#type' => 'textarea',
       '#rows' => 15,
       '#title' => $this->t('PHPUnit'),
@@ -82,6 +82,7 @@ class TesterSettingsForm extends ConfigFormBase {
     $this->config('tester.settings')
       ->set('clear_results', $form_state->getValue('tester_clear_results'))
       ->set('verbose', $form_state->getValue('tester_verbose'))
+      ->set('phpunit.config_yaml', $form_state->getValue('config_yaml'))
       ->save();
 
     parent::submitForm($form, $form_state);
