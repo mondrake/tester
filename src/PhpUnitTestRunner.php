@@ -196,7 +196,8 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
     $command_ret = \Drupal::service('tester.exec_manager')->execute('phpunit', [
       '-c',
       'core',
-      '--teamcity',
+//      '--teamcity',
+      '--testdox',
       '-v',
       $filename,
     ], $output, $error);
