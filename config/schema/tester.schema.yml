@@ -10,16 +10,10 @@ tester.settings:
     verbose:
       type: boolean
       label: 'Provide verbose information when running tests'
-    httpauth:
+    phpunit:
       type: mapping
-      label: 'HTTP authentication'
+      label: 'PHPUnit execution options'
       mapping:
-        method:
-          type: integer
-          label: 'Method'
-        username:
+        config_yaml:
           type: string
-          label: 'Username'
-        password:
-          type: string
-          label: 'Password'
+          label: 'YAML compliant text with all options'

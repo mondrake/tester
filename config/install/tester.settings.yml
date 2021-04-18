@@ -1,6 +1,4 @@
 clear_results: true
-httpauth:
-  method: 1
-  password: ''
-  username: ''
 verbose: true
+phpunit:
+  config_yaml: bingobongo
