@@ -49,41 +49,24 @@ class TesterSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('verbose'),
     ];
 
-    $form['httpauth'] = [
+    $form['runner_options'] = [
       '#type' => 'details',
-      '#title' => $this->t('HTTP authentication'),
-      '#description' => $this->t('HTTP auth settings to be used by the Tester browser during testing. Useful when the site requires basic HTTP authentication.'),
+      '#title' => $this->t('Runner options'),
     ];
-    $form['httpauth']['tester_httpauth_method'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Method'),
-      '#options' => [
-        CURLAUTH_BASIC => $this->t('Basic'),
-        CURLAUTH_DIGEST => $this->t('Digest'),
-        CURLAUTH_GSSNEGOTIATE => $this->t('GSS negotiate'),
-        CURLAUTH_NTLM => $this->t('NTLM'),
-        CURLAUTH_ANY => $this->t('Any'),
-        CURLAUTH_ANYSAFE => $this->t('Any safe'),
-      ],
-      '#default_value' => $config->get('httpauth.method'),
+    $form['runner_options']['mapping'] = [
+      '#type' => 'details',
+      '#collapsible' => TRUE,
+      '#open' => TRUE,
+      '#title' => $this->t('Enable/disable image formats'),
+      '#description' => $this->t("Edit the map below to enable/disable image formats. Enabled image file extensions will be determined by the enabled formats, through their MIME types. More information in the module's README.txt"),
     ];
-    $username = $config->get('httpauth.username');
-    $password = $config->get('httpauth.password');
-    $form['httpauth']['tester_httpauth_username'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Username'),
-      '#default_value' => $username,
+    $form['runner_options']['mapping']['textbox'] = [
+      '#type' => 'textarea',
+      '#rows' => 15,
+      '#default_value' => 'boing',
+
+//      '#default_value' => Yaml::encode($config->get('image_formats')),
     ];
-    if (!empty($username) && !empty($password)) {
-      $form['httpauth']['tester_httpauth_username']['#description'] = $this->t('Leave this blank to delete both the existing username and password.');
-    }
-    $form['httpauth']['tester_httpauth_password'] = [
-      '#type' => 'password',
-      '#title' => $this->t('Password'),
-    ];
-    if ($password) {
-      $form['httpauth']['tester_httpauth_password']['#description'] = $this->t('To change the password, enter the new password here.');
-    }
 
     return parent::buildForm($form, $form_state);
   }
@@ -93,18 +76,6 @@ class TesterSettingsForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('tester.settings');
-    // If a username was provided but a password wasn't, preserve the existing
-    // password.
-    if (!$form_state->isValueEmpty('tester_httpauth_username') && $form_state->isValueEmpty('tester_httpauth_password')) {
-      $form_state->setValue('tester_httpauth_password', $config->get('httpauth.password'));
-    }
-
-    // If a password was provided but a username wasn't, the credentials are
-    // incorrect, so throw an error.
-    if ($form_state->isValueEmpty('tester_httpauth_username') && !$form_state->isValueEmpty('tester_httpauth_password')) {
-      $form_state->setErrorByName('tester_httpauth_username', $this->t('HTTP authentication credentials must include a username in addition to a password.'));
-    }
-
     parent::validateForm($form, $form_state);
   }
 
@@ -115,9 +86,6 @@ class TesterSettingsForm extends ConfigFormBase {
     $this->config('tester.settings')
       ->set('clear_results', $form_state->getValue('tester_clear_results'))
       ->set('verbose', $form_state->getValue('tester_verbose'))
-      ->set('httpauth.method', $form_state->getValue('tester_httpauth_method'))
-      ->set('httpauth.username', $form_state->getValue('tester_httpauth_username'))
-      ->set('httpauth.password', $form_state->getValue('tester_httpauth_password'))
       ->save();
 
     parent::submitForm($form, $form_state);
