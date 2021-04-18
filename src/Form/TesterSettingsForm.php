@@ -51,20 +51,16 @@ class TesterSettingsForm extends ConfigFormBase {
 
     $form['runner_options'] = [
       '#type' => 'details',
-      '#title' => $this->t('Runner options'),
-    ];
-    $form['runner_options']['mapping'] = [
-      '#type' => 'details',
+      '#title' => $this->t('Execution options'),
       '#collapsible' => TRUE,
       '#open' => TRUE,
-      '#title' => $this->t('Enable/disable image formats'),
-      '#description' => $this->t("Edit the map below to enable/disable image formats. Enabled image file extensions will be determined by the enabled formats, through their MIME types. More information in the module's README.txt"),
     ];
-    $form['runner_options']['mapping']['textbox'] = [
+    $form['runner_options']['textbox'] = [
       '#type' => 'textarea',
       '#rows' => 15,
+      '#title' => $this->t('PHPUnit'),
+      '#description' => $this->t("Edit the map below to configure the PHPUnit CLI runner environment."),
       '#default_value' => 'boing',
-
 //      '#default_value' => Yaml::encode($config->get('image_formats')),
     ];
 
