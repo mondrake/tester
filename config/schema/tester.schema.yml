@@ -7,9 +7,6 @@ tester.settings:
     clear_results:
       type: boolean
       label: 'Clear results after each complete test suite run'
-    verbose:
-      type: boolean
-      label: 'Provide verbose information when running tests'
     phpunit:
       type: mapping
       label: 'PHPUnit execution options'
