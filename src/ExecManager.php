@@ -37,7 +37,7 @@ class ExecManager {
    *
    * @var int
    */
-  protected $timeout = 300;
+  protected $timeout = 3000;
 
   /**
    * The current user.
@@ -119,6 +119,7 @@ class ExecManager {
       'SIMPLETEST_BASE_URL' => "http://localhost/d91",
       'SYMFONY_DEPRECATIONS_HELPER' => 'disabled',
       'DBAL_URL' => "sqlite://localhost/sites/default/files/sqlite-drudbal",
+      'BROWSERTEST_OUTPUT_DIRECTORY' => \Drupal::service('file_system')->realpath('public://tester'),
     ];
 
     Timer::start('tester:runOsShell');

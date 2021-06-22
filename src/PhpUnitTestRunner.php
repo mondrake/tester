@@ -197,7 +197,7 @@ class PhpUnitTestRunner implements ContainerInjectionInterface {
       '-c',
       'core',
 //      '--teamcity',
-      '--testdox',
+//      '--testdox',
       '-v',
       $filename,
     ], $output, $error);
